@@ -14,7 +14,8 @@ final readonly class TrackVisitCommandHandler
 {
     public function __construct(
         private VisitRepositoryInterface $visitRepository
-    ) {}
+    ) {
+    }
 
     /**
      * Execute the command to track a visit

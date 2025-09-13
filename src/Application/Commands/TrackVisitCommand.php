@@ -12,5 +12,6 @@ final readonly class TrackVisitCommand
     public function __construct(
         public string $ipAddress,
         public string $pageUrl,
-    ) {}
+    ) {
+    }
 }
