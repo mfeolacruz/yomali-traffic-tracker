@@ -81,11 +81,8 @@ restart: down up ## Restart all services
 setup: ## Initial project setup
 	@cp -n .env.example .env || true
 	@make build
-	@make install
+	@make up
+	@sleep 3  # Esperar que los contenedores estén listos
+	@make install  # Instalar composer DESPUÉS
 	@make seed
 	@echo "${GREEN}✓ Project setup complete!${NC}"
-	@echo ""
-	@echo "  Access the application at: http://localhost:$${APP_PORT:-8888}"
-	@echo "  Access PHPMyAdmin at:     http://localhost:$${PMA_PORT:-8081}"
-	@echo ""
-	@echo "  Run 'make help' to see all available commands"
