@@ -19,6 +19,13 @@
         </include>
     </source>
 
+    <coverage>
+        <report>
+            <html outputDirectory="public/coverage"/>
+            <text outputFile="php://stdout" showOnlySummary="true"/>
+        </report>
+    </coverage>
+
     <php>
         <env name="APP_ENV" value="testing"/>
         <env name="DB_HOST" value="mysql"/>
