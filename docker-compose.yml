@@ -1,0 +1,86 @@
+services:
+  nginx:
+    image: nginx:alpine
+    container_name: yomali_nginx
+    ports:
+      - "${APP_PORT:-8080}:80"
+    volumes:
+      - ./public:/var/www/html
+      - ./.docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - php
+    networks:
+      - yomali_network
+
+  php:
+    build:
+      context: .
+      dockerfile: ./.docker/php/Dockerfile
+      args:
+        - XDEBUG_MODE=${XDEBUG_MODE:-off}
+        - XDEBUG_CLIENT_HOST=${XDEBUG_CLIENT_HOST:-host.docker.internal}
+        - XDEBUG_CLIENT_PORT=${XDEBUG_CLIENT_PORT:-9003}
+    container_name: yomali_php
+    volumes:
+      - ./:/var/www
+    working_dir: /var/www
+    environment:
+      - APP_ENV=${APP_ENV:-development}
+      - APP_DEBUG=${APP_DEBUG:-true}
+      - DB_HOST=${DB_HOST:-mysql}
+      - DB_PORT=${DB_PORT:-3306}
+      - DB_NAME=${DB_NAME:-tracker_db}
+      - DB_USER=${DB_USER:-tracker_user}
+      - DB_PASSWORD=${DB_PASSWORD:-tracker_pass}
+      - DB_TEST_NAME=${DB_TEST_NAME:-tracker_db_test}
+      - XDEBUG_MODE=${XDEBUG_MODE:-off}
+      - XDEBUG_CONFIG=client_host=${XDEBUG_CLIENT_HOST:-host.docker.internal} client_port=${XDEBUG_CLIENT_PORT:-9003}
+      - PHP_IDE_CONFIG=serverName=yomali-tracker
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    depends_on:
+      - mysql
+    networks:
+      - yomali_network
+
+  mysql:
+    image: mysql:latest
+    container_name: yomali_mysql
+    ports:
+      - "${DB_PORT:-3306}:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-root_password}
+      MYSQL_DATABASE: ${DB_NAME:-tracker_db}
+      MYSQL_USER: ${DB_USER:-tracker_user}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-tracker_pass}
+    volumes:
+      - ./database:/docker-entrypoint-initdb.d
+      - mysql_data:/var/lib/mysql
+    networks:
+      - yomali_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 10s
+      retries: 5
+
+  phpmyadmin:
+    image: phpmyadmin:latest
+    container_name: yomali_phpmyadmin
+    ports:
+      - "${PMA_PORT:-8081}:80"
+    environment:
+      PMA_HOST: ${DB_HOST:-mysql}
+      PMA_USER: root
+      PMA_PASSWORD: ${DB_ROOT_PASSWORD:-root_password}
+      UPLOAD_LIMIT: 300M
+    depends_on:
+      - mysql
+    networks:
+      - yomali_network
+
+networks:
+  yomali_network:
+    driver: bridge
+
+volumes:
+  mysql_data:
