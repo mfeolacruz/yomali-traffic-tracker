@@ -6,7 +6,7 @@ services:
       - "${APP_PORT:-8080}:80"
     volumes:
       - ./public:/var/www/html
-      - ./.docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - php
     networks:
@@ -15,7 +15,7 @@ services:
   php:
     build:
       context: .
-      dockerfile: ./.docker/php/Dockerfile
+      dockerfile: ./docker/php/Dockerfile
       args:
         - XDEBUG_MODE=${XDEBUG_MODE:-off}
         - XDEBUG_CLIENT_HOST=${XDEBUG_CLIENT_HOST:-host.docker.internal}

@@ -47,7 +47,7 @@ This will:
 - Seed database with test data
 
 3. Access the services:
-- **Application**: http://localhost:8080
+- **Application**: http://localhost:8888
 - **PHPMyAdmin**: http://localhost:8081
     - Username: `root`
     - Password: `root_password`
@@ -108,13 +108,13 @@ make xdebug-off
     - Run → Edit Configurations
     - Add PHP Remote Debug
     - IDE key: PHPSTORM
-    - Server: Create new (localhost:8080)
+    - Server: Create new (localhost:8888)
     - Use path mappings: project → /var/www
 
 4. **Start Debugging**
     - Click phone icon (Start Listening)
     - Set breakpoints in your code
-    - Access http://localhost:8080
+    - Access http://localhost:8888
 
 ## 📊 Database
 

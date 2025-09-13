@@ -16,13 +16,15 @@ RUN apt-get update && apt-get install -y \
     unzip \
     default-mysql-client \
     nano \
-    vim
+    vim \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # Install PHP extensions
 RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
 
-# Install Xdebug
-RUN pecl install xdebug-3.3.0 \
+# Install Xdebug (versión compatible con PHP 8.4)
+RUN pecl install xdebug \
     && docker-php-ext-enable xdebug
 
 # Install Composer
@@ -30,7 +32,9 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
 # Install Node.js and npm (for potential frontend tooling)
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
-    && apt-get install -y nodejs
+    && apt-get install -y nodejs \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 # Set working directory
 WORKDIR /var/www
@@ -56,18 +60,22 @@ RUN echo "[xdebug]" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
     echo "xdebug.log=/tmp/xdebug.log" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini && \
     echo "xdebug.idekey=PHPSTORM" >> /usr/local/etc/php/conf.d/docker-php-ext-xdebug.ini
 
-# Copy composer.json first for better caching
+# Copy composer.json first for better caching (if exists)
 COPY composer.json composer.lock* /var/www/
 
-# Install PHP dependencies
-RUN composer install --no-scripts --no-autoloader --prefer-dist --no-dev && \
-    composer clear-cache
+# Install PHP dependencies (if composer.json exists)
+RUN if [ -f composer.json ]; then \
+        composer install --no-scripts --no-autoloader --prefer-dist --no-dev && \
+        composer clear-cache; \
+    fi
 
 # Copy the rest of the application
 COPY . /var/www
 
-# Generate autoloader
-RUN composer dump-autoload --optimize
+# Generate autoloader (if vendor exists)
+RUN if [ -f composer.json ]; then \
+        composer dump-autoload --optimize; \
+    fi
 
 # Create a non-root user
 RUN groupadd -g 1000 www && \

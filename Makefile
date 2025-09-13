@@ -85,7 +85,7 @@ setup: ## Initial project setup
 	@make seed
 	@echo "${GREEN}✓ Project setup complete!${NC}"
 	@echo ""
-	@echo "  Access the application at: http://localhost:$${APP_PORT:-8080}"
+	@echo "  Access the application at: http://localhost:$${APP_PORT:-8888}"
 	@echo "  Access PHPMyAdmin at:     http://localhost:$${PMA_PORT:-8081}"
 	@echo ""
 	@echo "  Run 'make help' to see all available commands"
