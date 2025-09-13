@@ -17,7 +17,8 @@ final class Visit
         public readonly IpAddress $ipAddress,
         public readonly Url $url,
         public readonly \DateTimeImmutable $createdAt = new \DateTimeImmutable(),
-    ) {}
+    ) {
+    }
 
     /**
      * Factory method to create a new visit
