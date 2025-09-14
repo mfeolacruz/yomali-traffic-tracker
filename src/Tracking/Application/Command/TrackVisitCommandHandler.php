@@ -10,7 +10,7 @@ use Yomali\Tracker\Tracking\Domain\Repository\VisitRepositoryInterface;
 /**
  * Handles the TrackVisitCommand
  */
-final readonly class TrackVisitCommandHandler
+readonly class TrackVisitCommandHandler
 {
     public function __construct(
         private VisitRepositoryInterface $visitRepository
