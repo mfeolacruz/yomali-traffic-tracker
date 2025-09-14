@@ -68,7 +68,7 @@ final class TrackingEndpointAcceptanceTest extends TestCase
 
         // When: I send a POST request to the tracking endpoint
         $startTime = microtime(true);
-        $response = $this->httpClient->post('/api/v1/track.php', [
+        $response = $this->httpClient->post('/api/v1/track', [
             'json' => $visitData,
             'headers' => [
                 'Content-Type' => 'application/json',
@@ -112,7 +112,7 @@ final class TrackingEndpointAcceptanceTest extends TestCase
 
         foreach ($invalidUrls as $invalidUrl) {
             // When: I send a request with invalid URL
-            $response = $this->httpClient->post('/api/v1/track.php', [
+            $response = $this->httpClient->post('/api/v1/track', [
                 'json' => ['url' => $invalidUrl]
             ]);
 
@@ -156,7 +156,7 @@ final class TrackingEndpointAcceptanceTest extends TestCase
 
         foreach ($invalidPayloads as $payload) {
             // When: I send a request with missing URL
-            $response = $this->httpClient->post('/api/v1/track.php', [
+            $response = $this->httpClient->post('/api/v1/track', [
                 'json' => $payload
             ]);
 
@@ -180,7 +180,7 @@ final class TrackingEndpointAcceptanceTest extends TestCase
         ];
 
         // When: I send an oversized request
-        $response = $this->httpClient->post('/api/v1/track.php', [
+        $response = $this->httpClient->post('/api/v1/track', [
             'json' => $largePayload
         ]);
 
@@ -197,7 +197,7 @@ final class TrackingEndpointAcceptanceTest extends TestCase
     public function asWebDeveloperICanMakeCrossOriginRequestsToTheAPI(): void
     {
         // Given: A CORS preflight request
-        $response = $this->httpClient->options('/api/v1/track.php', [
+        $response = $this->httpClient->options('/api/v1/track', [
             'headers' => [
                 'Origin' => 'https://customer-website.com',
                 'Access-Control-Request-Method' => 'POST',
@@ -222,7 +222,7 @@ final class TrackingEndpointAcceptanceTest extends TestCase
 
         foreach ($invalidMethods as $method) {
             // When: I try to access the endpoint with invalid method
-            $response = $this->httpClient->request($method, '/api/v1/track.php');
+            $response = $this->httpClient->request($method, '/api/v1/track');
 
             // Then: The API returns 405 Method Not Allowed
             $this->assertEquals(405, $response->getStatusCode(), 
@@ -237,7 +237,7 @@ final class TrackingEndpointAcceptanceTest extends TestCase
     public function asDeveloperICanCheckTheAPIHealthStatus(): void
     {
         // When: I check the health endpoint
-        $response = $this->httpClient->get('/api/v1/health.php');
+        $response = $this->httpClient->get('/api/v1/health');
 
         // Then: The API returns health status
         $this->assertEquals(200, $response->getStatusCode());
@@ -261,7 +261,7 @@ final class TrackingEndpointAcceptanceTest extends TestCase
 
         // When: I send multiple requests
         foreach ($urls as $url) {
-            $response = $this->httpClient->post('/api/v1/track.php', [
+            $response = $this->httpClient->post('/api/v1/track', [
                 'json' => ['url' => $url]
             ]);
             $this->assertEquals(204, $response->getStatusCode());
@@ -283,7 +283,7 @@ final class TrackingEndpointAcceptanceTest extends TestCase
     public function asSystemAdministratorMalformedJsonIsRejectedGracefully(): void
     {
         // When: I send malformed JSON
-        $response = $this->httpClient->post('/api/v1/track.php', [
+        $response = $this->httpClient->post('/api/v1/track', [
             'body' => 'malformed-json{invalid',
             'headers' => ['Content-Type' => 'application/json']
         ]);

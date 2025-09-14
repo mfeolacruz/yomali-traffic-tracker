@@ -68,7 +68,7 @@ final class AnalyticsEndpointAcceptanceTest extends TestCase
     public function asAnalystICanRetrievePageAnalyticsForTrafficInsights(): void
     {
         // When: I request page analytics
-        $response = $this->httpClient->get('/api/v1/analytics.php');
+        $response = $this->httpClient->get('/api/v1/analytics');
 
         // Then: The API returns analytics data successfully
         $this->assertEquals(200, $response->getStatusCode(), 'Should return 200 OK for analytics request');
@@ -103,7 +103,7 @@ final class AnalyticsEndpointAcceptanceTest extends TestCase
     public function asAnalystICanFilterAnalyticsByDomainToFocusOnSpecificSites(): void
     {
         // When: I request analytics filtered by domain
-        $response = $this->httpClient->get('/api/v1/analytics.php?domain=example.com');
+        $response = $this->httpClient->get('/api/v1/analytics?domain=example.com');
 
         // Then: The API returns filtered results
         $this->assertEquals(200, $response->getStatusCode());
@@ -124,7 +124,7 @@ final class AnalyticsEndpointAcceptanceTest extends TestCase
     public function asAnalystICanFilterAnalyticsByDateRangeToAnalyzeSpecificPeriods(): void
     {
         // When: I request analytics for a specific date range
-        $response = $this->httpClient->get('/api/v1/analytics.php?start_date=2023-01-01&end_date=2023-01-31');
+        $response = $this->httpClient->get('/api/v1/analytics?start_date=2023-01-01&end_date=2023-01-31');
 
         // Then: The API returns filtered results
         $this->assertEquals(200, $response->getStatusCode());
@@ -148,7 +148,7 @@ final class AnalyticsEndpointAcceptanceTest extends TestCase
     public function asAnalystICanNavigateThroughAnalyticsResultsUsingPagination(): void
     {
         // When: I request the first page with a small limit
-        $response = $this->httpClient->get('/api/v1/analytics.php?page=1&limit=2');
+        $response = $this->httpClient->get('/api/v1/analytics?page=1&limit=2');
 
         // Then: The API returns paginated results
         $this->assertEquals(200, $response->getStatusCode());
@@ -163,7 +163,7 @@ final class AnalyticsEndpointAcceptanceTest extends TestCase
         $this->assertEquals(2, $body['pagination']['limit']);
         
         // When: I request the second page
-        $response2 = $this->httpClient->get('/api/v1/analytics.php?page=2&limit=2');
+        $response2 = $this->httpClient->get('/api/v1/analytics?page=2&limit=2');
         
         // Then: The API returns different results
         $this->assertEquals(200, $response2->getStatusCode());
@@ -192,7 +192,7 @@ final class AnalyticsEndpointAcceptanceTest extends TestCase
 
         foreach ($invalidParams as $params) {
             // When: I send request with invalid parameters
-            $response = $this->httpClient->get("/api/v1/analytics.php?{$params}");
+            $response = $this->httpClient->get("/api/v1/analytics?{$params}");
 
             // Then: The API returns 400 Bad Request
             $this->assertEquals(400, $response->getStatusCode(), 
@@ -210,7 +210,7 @@ final class AnalyticsEndpointAcceptanceTest extends TestCase
     public function asWebDeveloperICanMakeCrossOriginRequestsToAnalyticsAPI(): void
     {
         // Given: A CORS preflight request
-        $response = $this->httpClient->options('/api/v1/analytics.php', [
+        $response = $this->httpClient->options('/api/v1/analytics', [
             'headers' => [
                 'Origin' => 'https://dashboard.example.com',
                 'Access-Control-Request-Method' => 'GET',
@@ -235,7 +235,7 @@ final class AnalyticsEndpointAcceptanceTest extends TestCase
 
         foreach ($invalidMethods as $method) {
             // When: I try to access the endpoint with invalid method
-            $response = $this->httpClient->request($method, '/api/v1/analytics.php');
+            $response = $this->httpClient->request($method, '/api/v1/analytics');
 
             // Then: The API returns 405 Method Not Allowed
             $this->assertEquals(405, $response->getStatusCode(), 
@@ -251,7 +251,7 @@ final class AnalyticsEndpointAcceptanceTest extends TestCase
     {
         // When: I request analytics data
         $startTime = microtime(true);
-        $response = $this->httpClient->get('/api/v1/analytics.php');
+        $response = $this->httpClient->get('/api/v1/analytics');
         $responseTime = (microtime(true) - $startTime) * 1000; // Convert to milliseconds
 
         // Then: The API responds successfully
@@ -271,7 +271,7 @@ final class AnalyticsEndpointAcceptanceTest extends TestCase
         $this->pdo->exec('TRUNCATE TABLE visits');
 
         // When: I request analytics
-        $response = $this->httpClient->get('/api/v1/analytics.php');
+        $response = $this->httpClient->get('/api/v1/analytics');
 
         // Then: The API returns empty results gracefully
         $this->assertEquals(200, $response->getStatusCode());
@@ -289,7 +289,7 @@ final class AnalyticsEndpointAcceptanceTest extends TestCase
     public function asAnalystICanCombineMultipleFiltersForDetailedAnalysis(): void
     {
         // When: I combine domain, date range, and pagination filters
-        $response = $this->httpClient->get('/api/v1/analytics.php?domain=example.com&start_date=2023-01-01&end_date=2023-12-31&page=1&limit=5');
+        $response = $this->httpClient->get('/api/v1/analytics?domain=example.com&start_date=2023-01-01&end_date=2023-12-31&page=1&limit=5');
 
         // Then: The API processes all filters correctly
         $this->assertEquals(200, $response->getStatusCode());

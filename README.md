@@ -159,12 +159,12 @@ http://localhost:8888/api/v1/
 
 ### Endpoints
 
-#### 📍 **POST /track.php** - Track Page Visit
+#### 📍 **POST /track** - Track Page Visit
 
 **Purpose:** Record a page visit from a website
 
 **Method:** `POST`  
-**URL:** `http://localhost:8888/api/v1/track.php`  
+**URL:** `http://localhost:8888/api/v1/track`  
 **Content-Type:** `application/json`
 
 **Request Body:**
@@ -193,12 +193,12 @@ http://localhost:8888/api/v1/
 
 ---
 
-#### 📊 **GET /analytics.php** - Page Analytics
+#### 📊 **GET /analytics** - Page Analytics
 
 **Purpose:** Retrieve page analytics with optional filtering and pagination
 
 **Method:** `GET`  
-**URL:** `http://localhost:8888/api/v1/analytics.php`
+**URL:** `http://localhost:8888/api/v1/analytics`
 
 **Query Parameters:**
 - `domain` (optional) - Filter by specific domain (e.g., `example.com`)
@@ -209,7 +209,7 @@ http://localhost:8888/api/v1/
 
 **Example Request:**
 ```
-GET /api/v1/analytics.php?domain=example.com&start_date=2023-01-01&end_date=2023-12-31&page=1&limit=10
+GET /api/v1/analytics?domain=example.com&start_date=2023-01-01&end_date=2023-12-31&page=1&limit=10
 ```
 
 **Response (200 OK):**
@@ -255,12 +255,12 @@ GET /api/v1/analytics.php?domain=example.com&start_date=2023-01-01&end_date=2023
 
 ---
 
-#### 🔍 **GET /health.php** - Health Check
+#### 🔍 **GET /health** - Health Check
 
 **Purpose:** Check API service health and status
 
 **Method:** `GET`  
-**URL:** `http://localhost:8888/api/v1/health.php`
+**URL:** `http://localhost:8888/api/v1/health`
 
 **Response:**
 ```json
@@ -287,18 +287,18 @@ The interactive documentation provides:
 **Quick Test Commands:**
 ```bash
 # Test tracking endpoint
-curl -X POST http://localhost:8888/api/v1/track.php \
+curl -X POST http://localhost:8888/api/v1/track \
   -H "Content-Type: application/json" \
   -d '{"url": "https://example.com/test"}'
 
 # Test analytics endpoint
-curl "http://localhost:8888/api/v1/analytics.php?limit=5"
+curl "http://localhost:8888/api/v1/analytics?limit=5"
 
 # Test analytics with filters
-curl "http://localhost:8888/api/v1/analytics.php?domain=example.com&start_date=2023-01-01&limit=10"
+curl "http://localhost:8888/api/v1/analytics?domain=example.com&start_date=2023-01-01&limit=10"
 
 # Test health endpoint  
-curl http://localhost:8888/api/v1/health.php
+curl http://localhost:8888/api/v1/health
 ```
 
 ## 📊 Database
