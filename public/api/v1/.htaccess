@@ -1,7 +1,0 @@
-# Simple .htaccess for direct file access
-# No routing needed - each endpoint is a separate PHP file
-
-RewriteEngine On
-
-# Redirect root to track endpoint for convenience  
-RewriteRule ^/?$ track.php [L]
