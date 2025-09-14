@@ -81,7 +81,7 @@ DEBUG_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep -E '^(src/|
 if [ -n "$DEBUG_FILES" ]; then
     DEBUG_FOUND=false
     for FILE in $DEBUG_FILES; do
-        if git diff --cached "$FILE" | grep -E '^\+.*(var_dump|die\(|dd\(|dump\(|print_r|console\.log|debugger)' > /dev/null; then
+        if git diff --cached "$FILE" | grep -E '^\+.*(var_dump|[^a-zA-Z]die\(|[^a-zA-Z]dd\(|[^a-zA-Z]dump\(|print_r|console\.log|debugger)' > /dev/null; then
             echo -e "${YELLOW}    Found debug statement in: $FILE${NC}"
             DEBUG_FOUND=true
         fi

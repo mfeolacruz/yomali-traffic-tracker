@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-use Yomali\Tracker\Tracking\Application\Command\TrackVisitCommandHandler;
-use Yomali\Tracker\Tracking\Infrastructure\Http\Controller\TrackingController;
-use Yomali\Tracker\Tracking\Infrastructure\Persistence\Repository\MySQLVisitRepository;
+use Yomali\Tracker\Application\Tracking\Command\TrackVisitCommandHandler;
+use Yomali\Tracker\Infrastructure\Persistence\MySQL\Repository\MySQLVisitRepository;
+use Yomali\Tracker\Presentation\Api\Controller\TrackingController;
 
 require_once __DIR__ . '/../../../vendor/autoload.php';
 
