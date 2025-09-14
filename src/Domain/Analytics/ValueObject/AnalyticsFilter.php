@@ -40,6 +40,7 @@ final readonly class AnalyticsFilter
     {
         $dateRange = null;
 
+        // If both dates are provided, create a date range
         if (
             $startDate !== null && $endDate !== null &&
             trim($startDate) !== '' && trim($endDate) !== ''
@@ -47,6 +48,26 @@ final readonly class AnalyticsFilter
             try {
                 $dateRange = DateRange::fromStrings($startDate, $endDate);
             } catch (\InvalidArgumentException $e) {
+                // Invalid date format - ignore date filter
+                $dateRange = null;
+            }
+        } elseif ($startDate !== null && trim($startDate) !== '') {
+            // If only start date is provided, filter from that date to a far future date
+            try {
+                $start = new \DateTimeImmutable($startDate);
+                $end = new \DateTimeImmutable('2099-12-31 23:59:59'); // Far future date
+                $dateRange = new DateRange($start, $end);
+            } catch (\Exception $e) {
+                // Invalid date format - ignore date filter
+                $dateRange = null;
+            }
+        } elseif ($endDate !== null && trim($endDate) !== '') {
+            // If only end date is provided, filter from beginning of time to that date
+            try {
+                $start = new \DateTimeImmutable('2020-01-01 00:00:00'); // Reasonable start point
+                $end = new \DateTimeImmutable($endDate);
+                $dateRange = new DateRange($start, $end);
+            } catch (\Exception $e) {
                 // Invalid date format - ignore date filter
                 $dateRange = null;
             }

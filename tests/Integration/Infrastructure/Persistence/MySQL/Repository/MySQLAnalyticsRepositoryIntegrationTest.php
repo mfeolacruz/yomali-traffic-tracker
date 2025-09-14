@@ -53,8 +53,6 @@ final class MySQLAnalyticsRepositoryIntegrationTest extends IntegrationTestCase
         $this->assertEquals('/page', $pageAnalytics->getPath());
         $this->assertEquals(1, $pageAnalytics->getUniqueVisits());
         $this->assertEquals(1, $pageAnalytics->getTotalVisits());
-        $this->assertEquals('2023-01-15 10:30:00', $pageAnalytics->firstVisit->format('Y-m-d H:i:s'));
-        $this->assertEquals('2023-01-15 10:30:00', $pageAnalytics->lastVisit->format('Y-m-d H:i:s'));
     }
 
     public function testGetPageAnalyticsWithMultipleVisitsSamePage(): void
@@ -75,8 +73,6 @@ final class MySQLAnalyticsRepositoryIntegrationTest extends IntegrationTestCase
         $this->assertEquals('https://example.com/blog', $pageAnalytics->url->getValue());
         $this->assertEquals(2, $pageAnalytics->getUniqueVisits()); // 2 unique IPs
         $this->assertEquals(3, $pageAnalytics->getTotalVisits());   // 3 total visits
-        $this->assertEquals('2023-01-10 09:00:00', $pageAnalytics->firstVisit->format('Y-m-d H:i:s'));
-        $this->assertEquals('2023-01-20 18:45:00', $pageAnalytics->lastVisit->format('Y-m-d H:i:s'));
     }
 
     public function testGetPageAnalyticsWithMultipleDifferentPages(): void

@@ -32,6 +32,22 @@ final class TrackingEndpointAcceptanceTest extends TestCase
     {
         parent::setUp();
 
+        // For acceptance tests, ensure we use production database (not test database)
+        // This resets any environment changes made by integration tests
+        if (file_exists('/var/www/.env')) {
+            $dotenv = \Dotenv\Dotenv::createMutable('/var/www');
+            $dotenv->load();
+            
+            // Explicitly set production database for acceptance tests
+            $prodDbName = $_ENV['DB_NAME'] ?? 'tracker_db';
+            putenv('DB_NAME=' . $prodDbName);
+            $_ENV['DB_NAME'] = $prodDbName;
+            
+            // Clear APP_ENV to ensure we use production settings
+            putenv('APP_ENV=');
+            unset($_ENV['APP_ENV']);
+        }
+
         // Real HTTP client - this makes it a true acceptance test
         // Use nginx service name from within Docker network
         $this->baseUrl = 'http://yomali_nginx';
@@ -41,18 +57,40 @@ final class TrackingEndpointAcceptanceTest extends TestCase
             'http_errors' => false, // Don't throw exceptions on HTTP errors
         ]);
 
-        // Database setup for verification
+        // For acceptance tests, we'll test against the production database
+        // but use a separate test data approach
         MySQLConnection::reset();
-        $_ENV['DB_NAME'] = $_ENV['DB_TEST_NAME'] ?? 'tracker_db_test';
         $this->pdo = MySQLConnection::getInstance()->getPdo();
-        $this->pdo->exec('TRUNCATE TABLE visits');
+        
+        // Only clean our test data, don't clean in setUp to avoid race conditions
+        // Each test will clean its own data in tearDown
     }
 
     protected function tearDown(): void
     {
         parent::tearDown();
-        $this->pdo->exec('TRUNCATE TABLE visits');
+        $this->cleanTestData();
         MySQLConnection::reset();
+    }
+    
+    private function cleanTestData(): void
+    {
+        // Clean only test data, not all data
+        // Use recognizable test patterns to avoid affecting real data
+        $testPatterns = [
+            'https://customer-website.com/%',
+            'https://site1.com/%',
+            'https://site2.com/%', 
+            'https://site3.com/%',
+            'https://example.com%',
+            'not-a-url',
+            'javascript:%'
+        ];
+        
+        foreach ($testPatterns as $pattern) {
+            $stmt = $this->pdo->prepare("DELETE FROM visits WHERE page_url LIKE ?");
+            $stmt->execute([$pattern]);
+        }
     }
 
     /**
@@ -86,7 +124,8 @@ final class TrackingEndpointAcceptanceTest extends TestCase
         $this->assertLessThan(2000, $responseTime, 'Should process requests in reasonable time');
 
         // And: The visit data is stored correctly in the database
-        $stmt = $this->pdo->query('SELECT * FROM visits ORDER BY id DESC LIMIT 1');
+        $stmt = $this->pdo->prepare('SELECT * FROM visits WHERE page_url = ? ORDER BY id DESC LIMIT 1');
+        $stmt->execute(['https://customer-website.com/landing-page']);
         $visit = $stmt->fetch(\PDO::FETCH_ASSOC);
 
         $this->assertNotNull($visit, 'Visit should be stored in database');
@@ -136,9 +175,13 @@ final class TrackingEndpointAcceptanceTest extends TestCase
                 "Expected error message to contain 'Invalid URL' or 'URL is required', got: {$body['error']}");
         }
 
-        // And: No data should be stored for invalid requests
-        $stmt = $this->pdo->query('SELECT COUNT(*) FROM visits');
-        $this->assertEquals(0, $stmt->fetchColumn(), 'No visits should be stored for invalid URLs');
+        // And: No invalid data should be stored (check for any of the invalid test URLs)
+        $invalidTestPatterns = ['not-a-url', 'javascript:%'];
+        foreach ($invalidTestPatterns as $pattern) {
+            $stmt = $this->pdo->prepare('SELECT COUNT(*) FROM visits WHERE page_url LIKE ?');
+            $stmt->execute([$pattern]);
+            $this->assertEquals(0, $stmt->fetchColumn(), "No visits should be stored for invalid URL pattern: {$pattern}");
+        }
     }
 
     /**
@@ -267,13 +310,22 @@ final class TrackingEndpointAcceptanceTest extends TestCase
             $this->assertEquals(204, $response->getStatusCode());
         }
 
-        // Then: All visits are recorded correctly
-        $stmt = $this->pdo->query('SELECT COUNT(*) FROM visits');
-        $this->assertEquals(3, $stmt->fetchColumn(), 'All visits should be recorded');
+        // Then: All test visits are recorded correctly
+        $testUrlPatterns = ['https://site1.com/%', 'https://site2.com/%', 'https://site3.com/%'];
+        $totalTestVisits = 0;
+        foreach ($testUrlPatterns as $pattern) {
+            $stmt = $this->pdo->prepare('SELECT COUNT(*) FROM visits WHERE page_url LIKE ?');
+            $stmt->execute([$pattern]);
+            $totalTestVisits += $stmt->fetchColumn();
+        }
+        $this->assertEquals(3, $totalTestVisits, 'All test visits should be recorded');
         
-        $stmt = $this->pdo->query('SELECT page_url FROM visits ORDER BY id');
-        $visits = $stmt->fetchAll(\PDO::FETCH_COLUMN);
-        $this->assertEquals($urls, $visits, 'All URLs should be stored correctly');
+        // Verify specific URLs were stored
+        foreach ($urls as $url) {
+            $stmt = $this->pdo->prepare('SELECT COUNT(*) FROM visits WHERE page_url = ?');
+            $stmt->execute([$url]);
+            $this->assertEquals(1, $stmt->fetchColumn(), "URL {$url} should be stored exactly once");
+        }
     }
 
     /**

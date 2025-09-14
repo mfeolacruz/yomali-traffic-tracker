@@ -43,8 +43,15 @@ final class MySQLConnection
      */
     private function getRequiredEnv(string $key): string
     {
-        // Try $_ENV first (set by Dotenv or tests), then getenv() (Docker/system)
-        $value = $_ENV[$key] ?? getenv($key);
+        // In test environment, prioritize $_ENV (set by phpunit.xml) over getenv() (Docker/system)
+        $isTestEnvironment = ($_ENV['APP_ENV'] ?? getenv('APP_ENV')) === 'testing';
+
+        if ($isTestEnvironment && isset($_ENV[$key])) {
+            $value = $_ENV[$key];
+        } else {
+            // Try $_ENV first (set by Dotenv or tests), then getenv() (Docker/system)
+            $value = $_ENV[$key] ?? getenv($key);
+        }
 
         if ($value === false || $value === '') {
             throw new \RuntimeException(
@@ -57,12 +64,17 @@ final class MySQLConnection
 
     private function loadEnvironment(): void
     {
-        // Try to load .env file if it exists
-        $envFile = '/var/www/.env';
+        // Only load .env file if we're not in test environment
+        // Tests should rely on phpunit.xml environment configuration
+        $isTestEnvironment = ($_ENV['APP_ENV'] ?? getenv('APP_ENV')) === 'testing';
 
-        if (file_exists($envFile)) {
-            $dotenv = Dotenv::createMutable('/var/www');
-            $dotenv->safeLoad();
+        if (!$isTestEnvironment) {
+            $envFile = '/var/www/.env';
+
+            if (file_exists($envFile)) {
+                $dotenv = Dotenv::createMutable('/var/www');
+                $dotenv->safeLoad();
+            }
         }
     }
 

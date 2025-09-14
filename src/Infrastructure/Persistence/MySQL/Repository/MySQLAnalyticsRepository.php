@@ -18,9 +18,7 @@ final class MySQLAnalyticsRepository implements AnalyticsRepositoryInterface
             page_domain,
             page_path,
             COUNT(DISTINCT ip_address) as unique_visits,
-            COUNT(*) as total_visits,
-            MIN(created_at) as first_visit,
-            MAX(created_at) as last_visit
+            COUNT(*) as total_visits
         FROM visits
     ";
 
@@ -157,6 +155,8 @@ final class MySQLAnalyticsRepository implements AnalyticsRepositoryInterface
         $params = [];
 
         if ($filter->hasDateFilter()) {
+            // Always add both conditions when we have a date range
+            // (AnalyticsFilter ensures we always have both start and end dates when hasDateFilter() is true)
             $conditions[] = "created_at >= :start_date";
             $conditions[] = "created_at <= :end_date";
             $params[':start_date'] = $filter->dateRange->startDate->format('Y-m-d H:i:s');
@@ -183,9 +183,7 @@ final class MySQLAnalyticsRepository implements AnalyticsRepositoryInterface
             (string) $row['page_domain'],
             (string) $row['page_path'],
             (int) $row['unique_visits'],
-            (int) $row['total_visits'],
-            new \DateTimeImmutable($row['first_visit']),
-            new \DateTimeImmutable($row['last_visit'])
+            (int) $row['total_visits']
         );
     }
 }

@@ -162,7 +162,9 @@ final class AnalyticsFilterTest extends UnitTestCase
     {
         $filter = AnalyticsFilter::fromHttpParams('2023-01-01', null, 'example.com');
 
-        $this->assertNull($filter->dateRange);
+        $this->assertNotNull($filter->dateRange);
+        $this->assertEquals('2023-01-01 00:00:00', $filter->dateRange->startDate->format('Y-m-d H:i:s'));
+        $this->assertEquals('2099-12-31 23:59:59', $filter->dateRange->endDate->format('Y-m-d H:i:s'));
         $this->assertEquals('example.com', $filter->domain);
     }
 
@@ -170,7 +172,9 @@ final class AnalyticsFilterTest extends UnitTestCase
     {
         $filter = AnalyticsFilter::fromHttpParams(null, '2023-01-31', 'example.com');
 
-        $this->assertNull($filter->dateRange);
+        $this->assertNotNull($filter->dateRange);
+        $this->assertEquals('2020-01-01 00:00:00', $filter->dateRange->startDate->format('Y-m-d H:i:s'));
+        $this->assertEquals('2023-01-31 00:00:00', $filter->dateRange->endDate->format('Y-m-d H:i:s'));
         $this->assertEquals('example.com', $filter->domain);
     }
 

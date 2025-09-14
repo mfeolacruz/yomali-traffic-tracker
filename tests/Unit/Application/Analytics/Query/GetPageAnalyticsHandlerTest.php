@@ -55,10 +55,8 @@ final class GetPageAnalyticsHandlerTest extends UnitTestCase
 
         $url = Url::fromString('https://example.com/page');
         $visitCount = new VisitCount(10, 25);
-        $firstVisit = new \DateTimeImmutable('2023-01-01 10:00:00');
-        $lastVisit = new \DateTimeImmutable('2023-01-31 15:30:00');
         
-        $pageAnalytics = new PageAnalytics($url, $visitCount, $firstVisit, $lastVisit);
+        $pageAnalytics = new PageAnalytics($url, $visitCount);
 
         $this->repository
             ->expects($this->once())
@@ -78,8 +76,6 @@ final class GetPageAnalyticsHandlerTest extends UnitTestCase
         $this->assertEquals('/page', $dto->path);
         $this->assertEquals(10, $dto->uniqueVisits);
         $this->assertEquals(25, $dto->totalVisits);
-        $this->assertEquals('2023-01-01 10:00:00', $dto->firstVisit);
-        $this->assertEquals('2023-01-31 15:30:00', $dto->lastVisit);
     }
 
     public function testHandleWithMultiplePages(): void
@@ -89,23 +85,17 @@ final class GetPageAnalyticsHandlerTest extends UnitTestCase
 
         $page1 = new PageAnalytics(
             Url::fromString('https://example.com/page1'),
-            new VisitCount(5, 15),
-            new \DateTimeImmutable('2023-01-01 09:00:00'),
-            new \DateTimeImmutable('2023-01-15 17:00:00')
+            new VisitCount(5, 15)
         );
 
         $page2 = new PageAnalytics(
             Url::fromString('https://example.com/page2'),
-            new VisitCount(8, 20),
-            new \DateTimeImmutable('2023-01-05 11:30:00'),
-            new \DateTimeImmutable('2023-01-25 19:45:00')
+            new VisitCount(8, 20)
         );
 
         $page3 = new PageAnalytics(
             Url::fromString('https://example.com/blog/post'),
-            new VisitCount(12, 30),
-            new \DateTimeImmutable('2023-01-10 08:15:00'),
-            new \DateTimeImmutable('2023-01-31 22:30:00')
+            new VisitCount(12, 30)
         );
 
         $this->repository
@@ -148,9 +138,7 @@ final class GetPageAnalyticsHandlerTest extends UnitTestCase
 
         $pageAnalytics = new PageAnalytics(
             Url::fromString('https://blog.example.com/february-post'),
-            new VisitCount(15, 35),
-            new \DateTimeImmutable('2023-02-05 14:20:00'),
-            new \DateTimeImmutable('2023-02-25 16:40:00')
+            new VisitCount(15, 35)
         );
 
         $this->repository
@@ -175,9 +163,7 @@ final class GetPageAnalyticsHandlerTest extends UnitTestCase
 
         $pageAnalytics = new PageAnalytics(
             Url::fromString('https://shop.example.com/products/widget'),
-            new VisitCount(3, 8),
-            new \DateTimeImmutable('2023-03-20 10:15:00'),
-            new \DateTimeImmutable('2023-03-25 18:30:00')
+            new VisitCount(3, 8)
         );
 
         $this->repository
@@ -200,9 +186,7 @@ final class GetPageAnalyticsHandlerTest extends UnitTestCase
 
         $pageAnalytics = new PageAnalytics(
             Url::fromString('https://example.com/empty-page'),
-            VisitCount::zero(),
-            new \DateTimeImmutable('2023-04-01 00:00:00'),
-            new \DateTimeImmutable('2023-04-01 00:00:00')
+            VisitCount::zero()
         );
 
         $this->repository
