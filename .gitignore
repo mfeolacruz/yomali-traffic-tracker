@@ -17,6 +17,7 @@ Thumbs.db
 
 # Testing
 .phpunit.result.cache
+/public/coverage/
 /coverage/
 
 # Logs

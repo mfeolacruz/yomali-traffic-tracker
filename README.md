@@ -54,17 +54,49 @@ This will:
 
 ## 📝 Available Commands
 
+### Container Management
 ```bash
 make help         # Show all available commands
 make up           # Start all containers
 make down         # Stop all containers
+make restart      # Restart all services
+make build        # Build containers
+make logs         # View logs
 make shell        # Access PHP container shell
 make mysql        # Access MySQL CLI
-make test         # Run PHPUnit tests
+make clean        # Clean everything (including data)
+```
+
+### Development
+```bash
+make seed         # Re-seed database with test data
+make install      # Install PHP dependencies
+make composer     # Run composer commands (e.g., make composer cmd="require package")
+```
+
+### Testing
+```bash
+make test              # Run all tests
+make test-unit         # Run only unit tests  
+make test-integration  # Run only integration tests
+make test-acceptance   # Run only acceptance tests
+make test-coverage     # Run tests with coverage report (requires Xdebug)
+make test-coverage-text # Run tests with coverage summary in terminal
+```
+
+### Code Quality
+```bash
 make cs           # Check code style (PSR-12)
 make cs-fix       # Fix code style automatically
-make stan         # Run static analysis
-make seed         # Re-seed database with test data
+make stan         # Run PHPStan static analysis
+make quality      # Run all quality checks (cs + stan + test)
+```
+
+### Debugging
+```bash
+make xdebug-on       # Enable Xdebug for debugging
+make xdebug-coverage # Enable Xdebug for coverage
+make xdebug-off      # Disable Xdebug (better performance)
 ```
 
 ## 🧪 Testing
@@ -115,6 +147,91 @@ make xdebug-off
     - Click phone icon (Start Listening)
     - Set breakpoints in your code
     - Access http://localhost:8888
+
+## 🌐 API Endpoints
+
+The system provides RESTful API endpoints for tracking and monitoring website visits.
+
+### Base URL
+```
+http://localhost:8888/api/v1/
+```
+
+### Endpoints
+
+#### 📍 **POST /track.php** - Track Page Visit
+
+**Purpose:** Record a page visit from a website
+
+**Method:** `POST`  
+**URL:** `http://localhost:8888/api/v1/track.php`  
+**Content-Type:** `application/json`
+
+**Request Body:**
+```json
+{
+  "url": "https://example.com/page"
+}
+```
+
+**Responses:**
+- **204 No Content** - Visit tracked successfully
+- **400 Bad Request** - Invalid JSON, missing URL, or invalid URL format
+  ```json
+  { "error": "URL is required" }
+  ```
+- **405 Method Not Allowed** - Only POST and OPTIONS methods are allowed
+  ```json
+  { "error": "Method not allowed" }
+  ```
+- **500 Internal Server Error** - Server error
+  ```json
+  { "error": "Internal server error" }
+  ```
+
+**CORS Support:** Fully configured for cross-origin requests
+
+---
+
+#### 🔍 **GET /health.php** - Health Check
+
+**Purpose:** Check API service health and status
+
+**Method:** `GET`  
+**URL:** `http://localhost:8888/api/v1/health.php`
+
+**Response:**
+```json
+{
+  "status": "healthy",
+  "timestamp": 1694678400,
+  "service": "yomali-tracker-api",
+  "version": "1.0.0"
+}
+```
+
+### 📋 API Documentation
+
+- **Interactive Documentation:** http://localhost:8888/api/docs.php
+
+The interactive documentation provides:
+- **Try it out** functionality for all endpoints
+- **Complete request/response examples**
+- **Schema validation** and error examples
+- **CORS preflight** testing support
+
+### 🧪 Testing the API
+
+**Quick Test Commands:**
+```bash
+# Test tracking endpoint
+curl -X POST http://localhost:8888/api/v1/track.php \
+  -H "Content-Type: application/json" \
+  -d '{"url": "https://example.com/test"}'
+
+# Test health endpoint  
+curl http://localhost:8888/api/v1/health.php
+```
 
 ## 📊 Database
 
@@ -203,6 +320,7 @@ yomali-traffic-tracker/
 │   └── 02-seeder.sql   # Test data
 ├── public/              # Public web root
 │   ├── api/            # API endpoints
+│   │   └── v1/        # API version 1 endpoints
 │   ├── assets/         # Static assets
 │   │   ├── css/       # Stylesheets
 │   │   └── js/        # JavaScript files
@@ -213,7 +331,8 @@ yomali-traffic-tracker/
 │   └── Infrastructure/ # External services, DB, HTTP
 ├── tests/              # Test suites
 │   ├── Unit/          # Unit tests
-│   └── Integration/   # Integration tests
+│   ├── Integration/   # Integration tests
+│   └── Acceptance/    # Acceptance tests
 ├── vendor/             # Composer dependencies (git-ignored)
 ├── .env                # Environment variables (git-ignored)
 ├── .env.example        # Environment template

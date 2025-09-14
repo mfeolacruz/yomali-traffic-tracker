@@ -1,4 +1,4 @@
-.PHONY: help up down build logs shell mysql seed clean test composer install
+.PHONY: help up down build logs shell mysql seed clean test test-coverage test-unit test-integration test-acceptance composer install
 
 # Colors
 GREEN := \033[0;32m
@@ -14,7 +14,7 @@ help: ## Show this help
 up: ## Start all containers
 	docker-compose up -d
 	@echo "${GREEN}✓ All services started${NC}"
-	@echo "  Web:        http://localhost:$${APP_PORT:-8080}"
+	@echo "  Web:        http://localhost:$${APP_PORT:-8888}"
 	@echo "  PHPMyAdmin: http://localhost:$${PMA_PORT:-8081}"
 
 down: ## Stop all containers
@@ -49,13 +49,33 @@ composer: ## Run composer commands (e.g., make composer cmd="require package")
 clean: ## Clean everything (including data)
 	docker-compose down -v
 	rm -rf vendor/
+	rm -rf public/coverage/
 	@echo "${RED}✓ All containers, volumes and dependencies removed${NC}"
 
-test: ## Run PHPUnit tests
-	docker exec yomali_php vendor/bin/phpunit
+test: ## Run tests (without coverage, no warnings)
+	@docker exec yomali_php vendor/bin/phpunit
+	@echo "${GREEN}✓ Tests completed${NC}"
 
-test-coverage: ## Run tests with coverage report
-	docker exec yomali_php vendor/bin/phpunit --coverage-html coverage
+test-unit: ## Run only unit tests
+	@docker exec yomali_php vendor/bin/phpunit --testsuite unit
+	@echo "${GREEN}✓ Unit tests completed${NC}"
+
+test-integration: ## Run only integration tests
+	@docker exec yomali_php vendor/bin/phpunit --testsuite integration
+	@echo "${GREEN}✓ Integration tests completed${NC}"
+
+test-acceptance: ## Run only acceptance tests
+	@docker exec yomali_php vendor/bin/phpunit --testsuite acceptance
+	@echo "${GREEN}✓ Acceptance tests completed${NC}"
+
+test-coverage: ## Run tests with coverage report (requires Xdebug)
+	@docker exec -e XDEBUG_MODE=coverage yomali_php vendor/bin/phpunit --configuration phpunit-coverage.xml
+	@echo "${GREEN}✓ Tests with coverage completed${NC}"
+	@echo "${YELLOW}Coverage report available at: http://localhost:$${APP_PORT:-8888}/coverage/${NC}"
+
+test-coverage-text: ## Run tests with coverage summary in terminal
+	@docker exec -e XDEBUG_MODE=coverage yomali_php vendor/bin/phpunit --configuration phpunit-coverage.xml --coverage-text
+	@echo "${GREEN}✓ Tests with coverage completed${NC}"
 
 cs: ## Check code style (PSR-12)
 	docker exec yomali_php vendor/bin/phpcs --standard=PSR12 src/
@@ -66,10 +86,15 @@ cs-fix: ## Fix code style automatically
 stan: ## Run PHPStan static analysis
 	docker exec yomali_php vendor/bin/phpstan analyse src --level=7
 
-xdebug-on: ## Enable Xdebug
+xdebug-on: ## Enable Xdebug for debugging
 	@sed -i.bak 's/XDEBUG_MODE=.*/XDEBUG_MODE=develop,debug/' .env
 	docker-compose up -d php
-	@echo "${GREEN}✓ Xdebug enabled${NC}"
+	@echo "${GREEN}✓ Xdebug enabled for debugging${NC}"
+
+xdebug-coverage: ## Enable Xdebug for coverage
+	@sed -i.bak 's/XDEBUG_MODE=.*/XDEBUG_MODE=coverage/' .env
+	docker-compose up -d php
+	@echo "${GREEN}✓ Xdebug enabled for coverage${NC}"
 
 xdebug-off: ## Disable Xdebug (better performance)
 	@sed -i.bak 's/XDEBUG_MODE=.*/XDEBUG_MODE=off/' .env
@@ -81,11 +106,19 @@ restart: down up ## Restart all services
 setup: ## Initial project setup
 	@cp -n .env.example .env || true
 	@make build
+	@make up
+	@sleep 3
 	@make install
 	@make seed
 	@echo "${GREEN}✓ Project setup complete!${NC}"
-	@echo ""
-	@echo "  Access the application at: http://localhost:$${APP_PORT:-8888}"
-	@echo "  Access PHPMyAdmin at:     http://localhost:$${PMA_PORT:-8081}"
-	@echo ""
-	@echo "  Run 'make help' to see all available commands"
+
+quality: ## Run all quality checks
+	@echo "${YELLOW}Running code quality checks...${NC}"
+	@make cs
+	@make stan
+	@make test
+	@echo "${GREEN}✓ All quality checks passed${NC}"
+
+clean-coverage: ## Remove coverage reports
+	rm -rf public/coverage/
+	@echo "${YELLOW}✓ Coverage reports removed${NC}"
