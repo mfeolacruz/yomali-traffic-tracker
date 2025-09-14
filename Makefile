@@ -1,4 +1,4 @@
-.PHONY: help up down build logs shell mysql seed clean test test-coverage test-unit test-integration composer install
+.PHONY: help up down build logs shell mysql seed clean test test-coverage test-unit test-integration test-acceptance composer install
 
 # Colors
 GREEN := \033[0;32m
@@ -63,6 +63,10 @@ test-unit: ## Run only unit tests
 test-integration: ## Run only integration tests
 	@docker exec yomali_php vendor/bin/phpunit --testsuite integration
 	@echo "${GREEN}✓ Integration tests completed${NC}"
+
+test-acceptance: ## Run only acceptance tests
+	@docker exec yomali_php vendor/bin/phpunit --testsuite acceptance
+	@echo "${GREEN}✓ Acceptance tests completed${NC}"
 
 test-coverage: ## Run tests with coverage report (requires Xdebug)
 	@docker exec -e XDEBUG_MODE=coverage yomali_php vendor/bin/phpunit --configuration phpunit-coverage.xml

@@ -79,6 +79,7 @@ make composer     # Run composer commands (e.g., make composer cmd="require pack
 make test              # Run all tests
 make test-unit         # Run only unit tests  
 make test-integration  # Run only integration tests
+make test-acceptance   # Run only acceptance tests
 make test-coverage     # Run tests with coverage report (requires Xdebug)
 make test-coverage-text # Run tests with coverage summary in terminal
 ```
