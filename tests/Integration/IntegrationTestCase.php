@@ -13,43 +13,63 @@ use Yomali\Tracker\Infrastructure\Persistence\MySQL\Connection\MySQLConnection;
  */
 abstract class IntegrationTestCase extends TestCase
 {
-    private static bool $envLoaded = false;
-    private static string $originalDbName = '';
-    private static string $testDbName = '';
-
     protected function setUp(): void
     {
         parent::setUp();
-
-        // Load .env once
-        if (!self::$envLoaded) {
-            $dotenv = Dotenv::createMutable('/var/www');
-            $dotenv->load();
-
-            // Store original and test database names - fail if not set
-            self::$originalDbName = $_ENV['DB_NAME'] ?? throw new \RuntimeException('DB_NAME environment variable is not set');
-            self::$testDbName = $_ENV['DB_TEST_NAME'] ?? throw new \RuntimeException('DB_TEST_NAME environment variable is not set');
-            self::$envLoaded = true;
-        }
-
-        // Reset singleton BEFORE changing environment
+        
+        // Force test database configuration from .env
+        $this->forceTestDatabaseConfig();
+        
+        // Ensure we're using the test database
+        $this->ensureTestDatabase();
+        
+        // Reset singleton to ensure fresh connection with test database
         MySQLConnection::reset();
-
-        // Switch to test database
-        $_ENV['DB_NAME'] = self::$testDbName;
-        putenv('DB_NAME=' . self::$testDbName);
     }
 
     protected function tearDown(): void
     {
         parent::tearDown();
 
-        // Reset connection
+        // Reset connection for cleanup
         MySQLConnection::reset();
-
-        // Restore original database
-        $_ENV['DB_NAME'] = self::$originalDbName;
-        putenv('DB_NAME=' . self::$originalDbName);
+    }
+    
+    private function forceTestDatabaseConfig(): void
+    {
+        // Load .env to get DB_TEST_NAME
+        $dotenv = Dotenv::createMutable('/var/www');
+        $dotenv->load();
+        
+        $testDbName = $_ENV['DB_TEST_NAME'] ?? null;
+        
+        if (!$testDbName) {
+            throw new \RuntimeException('DB_TEST_NAME environment variable is not set in .env');
+        }
+        
+        // Override DB_NAME with test database name
+        $_ENV['DB_NAME'] = $testDbName;
+        putenv('DB_NAME=' . $testDbName);
+        
+        // Ensure we're in testing environment
+        $_ENV['APP_ENV'] = 'testing';
+        putenv('APP_ENV=testing');
+    }
+    
+    private function ensureTestDatabase(): void
+    {
+        // Get expected test database name from .env
+        $expectedTestDb = $_ENV['DB_TEST_NAME'] ?? 'tracker_db_test';
+        $currentDb = $_ENV['DB_NAME'] ?? getenv('DB_NAME');
+        
+        if ($currentDb !== $expectedTestDb) {
+            throw new \RuntimeException(
+                "DANGER: Tests are not using the test database!\n" .
+                "Expected: $expectedTestDb\n" .
+                "Current: $currentDb\n" .
+                "This could destroy production data. Check configuration."
+            );
+        }
     }
 
     /**
