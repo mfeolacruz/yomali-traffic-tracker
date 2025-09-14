@@ -193,6 +193,68 @@ http://localhost:8888/api/v1/
 
 ---
 
+#### 📊 **GET /analytics.php** - Page Analytics
+
+**Purpose:** Retrieve page analytics with optional filtering and pagination
+
+**Method:** `GET`  
+**URL:** `http://localhost:8888/api/v1/analytics.php`
+
+**Query Parameters:**
+- `domain` (optional) - Filter by specific domain (e.g., `example.com`)
+- `start_date` (optional) - Filter from date (format: `YYYY-MM-DD`)
+- `end_date` (optional) - Filter to date (format: `YYYY-MM-DD`)
+- `page` (optional, default: 1) - Page number for pagination
+- `limit` (optional, default: 20, max: 100) - Results per page
+
+**Example Request:**
+```
+GET /api/v1/analytics.php?domain=example.com&start_date=2023-01-01&end_date=2023-12-31&page=1&limit=10
+```
+
+**Response (200 OK):**
+```json
+{
+  "data": [
+    {
+      "url": "https://example.com/popular-page",
+      "domain": "example.com",
+      "path": "/popular-page",
+      "unique_visits": 150,
+      "total_visits": 300,
+      "first_visit": "2023-01-15 10:30:00",
+      "last_visit": "2023-12-20 16:45:00"
+    }
+  ],
+  "pagination": {
+    "page": 1,
+    "limit": 10,
+    "total": 25,
+    "total_pages": 3,
+    "has_next_page": true,
+    "has_previous_page": false
+  }
+}
+```
+
+**Error Responses:**
+- **400 Bad Request** - Invalid parameters
+  ```json
+  { "error": "Page must be at least 1" }
+  ```
+- **405 Method Not Allowed** - Only GET and OPTIONS methods allowed
+  ```json
+  { "error": "Method not allowed" }
+  ```
+- **500 Internal Server Error** - Server error
+  ```json
+  { "error": "Internal server error" }
+  ```
+
+**CORS Support:** Fully configured for cross-origin requests
+
+---
+
 #### 🔍 **GET /health.php** - Health Check
 
 **Purpose:** Check API service health and status
@@ -228,6 +290,12 @@ The interactive documentation provides:
 curl -X POST http://localhost:8888/api/v1/track.php \
   -H "Content-Type: application/json" \
   -d '{"url": "https://example.com/test"}'
+
+# Test analytics endpoint
+curl "http://localhost:8888/api/v1/analytics.php?limit=5"
+
+# Test analytics with filters
+curl "http://localhost:8888/api/v1/analytics.php?domain=example.com&start_date=2023-01-01&limit=10"
 
 # Test health endpoint  
 curl http://localhost:8888/api/v1/health.php
