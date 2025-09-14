@@ -1,0 +1,196 @@
+openapi: 3.0.0
+info:
+  title: Yomali Traffic Tracker API
+  version: 1.0.0
+  description: |
+    Professional website traffic tracking system built with PHP 8.4 and clean architecture principles.
+    
+    ## Base URL
+    All API endpoints are relative to: `http://localhost:8888/api/v1/`
+
+servers:
+  - url: http://localhost:8888/api/v1
+    description: Local development server
+  - url: /api/v1
+    description: Relative URL for current host
+
+paths:
+  /track.php:
+    post:
+      tags:
+        - Tracking
+      summary: Track a page visit
+      description: |
+        Records a page visit from a website. Automatically detects visitor IP address 
+        from request headers (X-Forwarded-For, X-Real-IP, REMOTE_ADDR).
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - url
+              properties:
+                url:
+                  type: string
+                  format: uri
+                  description: The URL of the page being visited
+                  example: https://example.com/product/123
+            examples:
+              website_page:
+                summary: Website page
+                value:
+                  url: "https://example.com/about"
+              blog_post:
+                summary: Blog post  
+                value:
+                  url: "https://myblog.com/posts/how-to-track-visitors"
+              e_commerce:
+                summary: E-commerce product
+                value:
+                  url: "https://shop.example.com/products/item-456"
+      responses:
+        '204':
+          description: Visit tracked successfully
+        '400':
+          description: Invalid request data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              examples:
+                missing_url:
+                  summary: Missing URL
+                  value:
+                    error: "URL is required"
+                invalid_json:
+                  summary: Invalid JSON
+                  value:
+                    error: "Invalid JSON"
+                invalid_url:
+                  summary: Invalid URL format
+                  value:
+                    error: "Invalid URL: not-a-valid-url"
+        '405':
+          description: Method not allowed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: "Method not allowed"
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: "Internal server error"
+    options:
+      tags:
+        - Tracking
+      summary: CORS preflight request
+      description: Handles CORS preflight requests for cross-origin tracking
+      responses:
+        '204':
+          description: CORS preflight successful
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: string
+                example: "*"
+            Access-Control-Allow-Methods:
+              schema:
+                type: string
+                example: "GET, POST, OPTIONS"
+            Access-Control-Allow-Headers:
+              schema:
+                type: string
+                example: "Content-Type, Authorization"
+
+  /analytics:
+    get:
+      summary: Get analytics data
+      parameters:
+        - name: domain
+          in: query
+          schema:
+            type: string
+        - name: start_date
+          in: query
+          schema:
+            type: string
+            format: date
+        - name: end_date
+          in: query
+          schema:
+            type: string
+            format: date
+      responses:
+        '200':
+          description: Analytics data
+        '500':
+          description: Server error
+
+  /health.php:
+    get:
+      tags:
+        - Monitoring
+      summary: Health check
+      description: |
+        Returns the current health status of the API service. 
+        Use this endpoint to monitor service availability.
+      responses:
+        '200':
+          description: Service is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "healthy"
+                  timestamp:
+                    type: integer
+                    description: Unix timestamp
+                    example: 1694678400
+                  service:
+                    type: string
+                    example: "yomali-tracker-api"
+                  version:
+                    type: string
+                    example: "1.0.0"
+              example:
+                status: "healthy"
+                timestamp: 1694678400
+                service: "yomali-tracker-api"
+                version: "1.0.0"
+        '500':
+          description: Health check failed
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: "Health check failed"
+
+tags:
+  - name: Tracking
+    description: Page visit tracking operations
+  - name: Monitoring  
+    description: Service health and monitoring endpoints
