@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yomali\Tracker\Domain\Visit\ValueObjects;
+namespace Yomali\Tracker\Tracking\Domain\ValueObject;
 
 /**
  * URL value object that extracts domain and path components

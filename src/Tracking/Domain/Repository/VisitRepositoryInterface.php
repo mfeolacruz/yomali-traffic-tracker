@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Yomali\Tracker\Domain\Visit;
+namespace Yomali\Tracker\Tracking\Domain\Repository;
+
+use Yomali\Tracker\Tracking\Domain\Entity\Visit;
 
 /**
  * Repository interface for Visit persistence

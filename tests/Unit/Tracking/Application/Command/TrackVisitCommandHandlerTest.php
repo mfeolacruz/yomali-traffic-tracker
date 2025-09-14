@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace Yomali\Tracker\Tests\Unit\Application\Commands;
+namespace Yomali\Tracker\Tests\Unit\Tracking\Application\Command;
 
-use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\MockObject\MockObject;
-use Yomali\Tracker\Application\Commands\TrackVisitCommand;
-use Yomali\Tracker\Application\Commands\TrackVisitCommandHandler;
-use Yomali\Tracker\Domain\Visit\Visit;
-use Yomali\Tracker\Domain\Visit\VisitRepositoryInterface;
+use PHPUnit\Framework\TestCase;
+use Yomali\Tracker\Tracking\Application\Command\TrackVisitCommand;
+use Yomali\Tracker\Tracking\Application\Command\TrackVisitCommandHandler;
+use Yomali\Tracker\Tracking\Domain\Entity\Visit;
+use Yomali\Tracker\Tracking\Domain\Repository\VisitRepositoryInterface;
 
 final class TrackVisitCommandHandlerTest extends TestCase
 {

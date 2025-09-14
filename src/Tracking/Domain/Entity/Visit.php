@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Yomali\Tracker\Domain\Visit;
+namespace Yomali\Tracker\Tracking\Domain\Entity;
 
-use Yomali\Tracker\Domain\Visit\ValueObjects\{IpAddress, Url};
+use Yomali\Tracker\Tracking\Domain\ValueObject\{IpAddress, Url};
 
 /**
  * Visit entity representing a single page visit

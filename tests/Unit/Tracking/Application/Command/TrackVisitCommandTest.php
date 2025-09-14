@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Yomali\Tracker\Tests\Unit\Application\Commands;
+namespace Yomali\Tracker\Tests\Unit\Tracking\Application\Command;
 
 use PHPUnit\Framework\TestCase;
-use Yomali\Tracker\Application\Commands\TrackVisitCommand;
+use Yomali\Tracker\Tracking\Application\Command\TrackVisitCommand;
 
 final class TrackVisitCommandTest extends TestCase
 {

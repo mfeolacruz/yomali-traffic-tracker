@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yomali\Tracker\Application\Commands;
+namespace Yomali\Tracker\Tracking\Application\Command;
 
 /**
  * Command to track a new visit

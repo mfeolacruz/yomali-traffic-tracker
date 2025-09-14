@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Yomali\Tracker\Tests\Unit\Domain\Visit\ValueObjects;
+namespace Yomali\Tracker\Tests\Unit\Tracking\Domain\ValueObject;
 
 use PHPUnit\Framework\TestCase;
-use Yomali\Tracker\Domain\Visit\ValueObjects\Url;
+use Yomali\Tracker\Tracking\Domain\ValueObject\Url;
 
 final class UrlTest extends TestCase
 {

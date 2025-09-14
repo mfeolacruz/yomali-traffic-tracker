@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Yomali\Tracker\Application\Commands;
+namespace Yomali\Tracker\Tracking\Application\Command;
 
-use Yomali\Tracker\Domain\Visit\Visit;
-use Yomali\Tracker\Domain\Visit\VisitRepositoryInterface;
+use Yomali\Tracker\Tracking\Domain\Entity\Visit;
+use Yomali\Tracker\Tracking\Domain\Repository\VisitRepositoryInterface;
 
 /**
  * Handles the TrackVisitCommand

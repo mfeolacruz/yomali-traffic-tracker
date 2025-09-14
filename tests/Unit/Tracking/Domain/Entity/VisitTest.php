@@ -2,11 +2,11 @@
 
 declare(strict_types=1);
 
-namespace Yomali\Tracker\Tests\Unit\Domain\Visit;
+namespace Yomali\Tracker\Tests\Unit\Tracking\Domain\Entity;
 
 use PHPUnit\Framework\TestCase;
-use Yomali\Tracker\Domain\Visit\Visit;
-use Yomali\Tracker\Domain\Visit\ValueObjects\{IpAddress, Url};
+use Yomali\Tracker\Tracking\Domain\Entity\Visit;
+use Yomali\Tracker\Tracking\Domain\ValueObject\{IpAddress, Url};
 
 final class VisitTest extends TestCase
 {
