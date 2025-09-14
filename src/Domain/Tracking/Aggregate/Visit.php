@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Yomali\Tracker\Domain\Tracking\Entity;
+namespace Yomali\Tracker\Domain\Tracking\Aggregate;
 
 use Yomali\Tracker\Domain\Tracking\ValueObject\{Url};
 use Yomali\Tracker\Domain\Tracking\ValueObject\IpAddress;

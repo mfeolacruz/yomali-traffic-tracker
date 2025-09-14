@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace Yomali\Tracker\Tests\Unit\Domain\Tracking\Entity;
+namespace Yomali\Tracker\Tests\Unit\Domain\Tracking\Aggregate;
 
 use PHPUnit\Framework\TestCase;
-use Yomali\Tracker\Domain\Tracking\Entity\Visit;
+use Yomali\Tracker\Domain\Tracking\Aggregate\Visit;
 use Yomali\Tracker\Domain\Tracking\ValueObject\{Url};
 use Yomali\Tracker\Domain\Tracking\ValueObject\IpAddress;
 

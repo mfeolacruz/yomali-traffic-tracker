@@ -119,7 +119,7 @@ final class TrackingControllerTest extends UnitTestCase
             ->expects($this->once())
             ->method('save')
             ->with($this->callback(function ($visit) {
-                return $visit instanceof \Yomali\Tracker\Domain\Tracking\Entity\Visit;
+                return $visit instanceof \Yomali\Tracker\Domain\Tracking\Aggregate\Visit;
             }));
 
         // Since we can't extend the final class, we'll test processTrackingRequest directly
@@ -140,7 +140,7 @@ final class TrackingControllerTest extends UnitTestCase
             ->expects($this->once())
             ->method('save')
             ->with($this->callback(function ($visit) {
-                return $visit instanceof \Yomali\Tracker\Domain\Tracking\Entity\Visit;
+                return $visit instanceof \Yomali\Tracker\Domain\Tracking\Aggregate\Visit;
             }));
 
         $requestData = json_encode(['url' => self::TEST_URLS['VALID_WITH_PATH']]);

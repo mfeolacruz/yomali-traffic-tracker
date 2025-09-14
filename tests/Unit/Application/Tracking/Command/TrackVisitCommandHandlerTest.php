@@ -8,7 +8,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Yomali\Tracker\Application\Tracking\Command\TrackVisitCommand;
 use Yomali\Tracker\Application\Tracking\Command\TrackVisitCommandHandler;
-use Yomali\Tracker\Domain\Tracking\Entity\Visit;
+use Yomali\Tracker\Domain\Tracking\Aggregate\Visit;
 use Yomali\Tracker\Domain\Tracking\Repository\VisitRepositoryInterface;
 
 final class TrackVisitCommandHandlerTest extends TestCase

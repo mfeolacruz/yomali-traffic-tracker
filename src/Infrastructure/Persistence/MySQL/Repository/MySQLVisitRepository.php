@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Yomali\Tracker\Infrastructure\Persistence\MySQL\Repository;
 
-use Yomali\Tracker\Domain\Tracking\Entity\Visit;
+use Yomali\Tracker\Domain\Tracking\Aggregate\Visit;
 use Yomali\Tracker\Domain\Tracking\Repository\VisitRepositoryInterface;
 use Yomali\Tracker\Infrastructure\Persistence\MySQL\Connection\MySQLConnection;
 
