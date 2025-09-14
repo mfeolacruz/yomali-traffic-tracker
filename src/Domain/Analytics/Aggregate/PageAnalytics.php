@@ -12,26 +12,17 @@ final readonly class PageAnalytics
     public function __construct(
         public Url $url,
         public VisitCount $visitCount,
-        public \DateTimeImmutable $firstVisit,
-        public \DateTimeImmutable $lastVisit,
     ) {
-        if ($firstVisit > $lastVisit) {
-            throw new \InvalidArgumentException('First visit cannot be after last visit');
-        }
     }
 
     public static function create(
         Url $url,
         int $uniqueVisits,
-        int $totalVisits,
-        \DateTimeImmutable $firstVisit,
-        \DateTimeImmutable $lastVisit
+        int $totalVisits
     ): self {
         return new self(
             $url,
-            VisitCount::fromTotals($uniqueVisits, $totalVisits),
-            $firstVisit,
-            $lastVisit
+            VisitCount::fromTotals($uniqueVisits, $totalVisits)
         );
     }
 
@@ -40,15 +31,11 @@ final readonly class PageAnalytics
         string $domain,
         string $path,
         int $uniqueVisits,
-        int $totalVisits,
-        \DateTimeImmutable $firstVisit,
-        \DateTimeImmutable $lastVisit
+        int $totalVisits
     ): self {
         return new self(
             Url::create($url, $domain, $path),
-            VisitCount::fromTotals($uniqueVisits, $totalVisits),
-            $firstVisit,
-            $lastVisit
+            VisitCount::fromTotals($uniqueVisits, $totalVisits)
         );
     }
 
@@ -82,11 +69,6 @@ final readonly class PageAnalytics
         return $this->visitCount->getUniqueRatio();
     }
 
-    public function getVisitDurationInDays(): int
-    {
-        return (int) $this->firstVisit->diff($this->lastVisit)->days + 1;
-    }
-
     public function isSamePage(Url $url): bool
     {
         return $this->url->equals($url);
@@ -100,17 +82,13 @@ final readonly class PageAnalytics
 
         return new self(
             $this->url,
-            $this->visitCount->add($other->visitCount),
-            $this->firstVisit < $other->firstVisit ? $this->firstVisit : $other->firstVisit,
-            $this->lastVisit > $other->lastVisit ? $this->lastVisit : $other->lastVisit
+            $this->visitCount->add($other->visitCount)
         );
     }
 
     public function equals(self $other): bool
     {
         return $this->url->equals($other->url)
-            && $this->visitCount->equals($other->visitCount)
-            && $this->firstVisit == $other->firstVisit
-            && $this->lastVisit == $other->lastVisit;
+            && $this->visitCount->equals($other->visitCount);
     }
 }

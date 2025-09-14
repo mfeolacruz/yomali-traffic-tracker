@@ -14,8 +14,6 @@ final readonly class PageAnalyticsDTO
         public string $path,
         public int $uniqueVisits,
         public int $totalVisits,
-        public string $firstVisit,
-        public string $lastVisit,
     ) {
     }
 
@@ -27,8 +25,6 @@ final readonly class PageAnalyticsDTO
             $pageAnalytics->getPath(),
             $pageAnalytics->getUniqueVisits(),
             $pageAnalytics->getTotalVisits(),
-            $pageAnalytics->firstVisit->format('Y-m-d H:i:s'),
-            $pageAnalytics->lastVisit->format('Y-m-d H:i:s'),
         );
     }
 
@@ -43,8 +39,6 @@ final readonly class PageAnalyticsDTO
             'path' => $this->path,
             'unique_visits' => $this->uniqueVisits,
             'total_visits' => $this->totalVisits,
-            'first_visit' => $this->firstVisit,
-            'last_visit' => $this->lastVisit,
         ];
     }
 }

@@ -18,70 +18,54 @@ final class PageAnalyticsTest extends UnitTestCase
     {
         $url = Url::fromString('https://example.com/page');
         $visitCount = new VisitCount(5, 10);
-        $firstVisit = new \DateTimeImmutable('2023-01-01 10:00:00');
-        $lastVisit = new \DateTimeImmutable('2023-01-31 15:30:00');
 
-        $pageAnalytics = new PageAnalytics($url, $visitCount, $firstVisit, $lastVisit);
+        $pageAnalytics = new PageAnalytics($url, $visitCount);
 
         $this->assertEquals($url, $pageAnalytics->url);
         $this->assertEquals($visitCount, $pageAnalytics->visitCount);
-        $this->assertEquals($firstVisit, $pageAnalytics->firstVisit);
-        $this->assertEquals($lastVisit, $pageAnalytics->lastVisit);
     }
 
-    public function testConstructorWithEqualDates(): void
+    public function testConstructorWithSingleVisit(): void
     {
         $url = Url::fromString('https://example.com/page');
         $visitCount = new VisitCount(1, 1);
-        $date = new \DateTimeImmutable('2023-01-01 12:00:00');
 
-        $pageAnalytics = new PageAnalytics($url, $visitCount, $date, $date);
+        $pageAnalytics = new PageAnalytics($url, $visitCount);
 
-        $this->assertEquals($date, $pageAnalytics->firstVisit);
-        $this->assertEquals($date, $pageAnalytics->lastVisit);
+        $this->assertEquals($url, $pageAnalytics->url);
+        $this->assertEquals($visitCount, $pageAnalytics->visitCount);
     }
 
-    public function testConstructorThrowsExceptionWhenFirstVisitIsAfterLastVisit(): void
+    public function testConstructorWorksWithZeroVisits(): void
     {
         $url = Url::fromString('https://example.com/page');
-        $visitCount = new VisitCount(5, 10);
-        $firstVisit = new \DateTimeImmutable('2023-01-31');
-        $lastVisit = new \DateTimeImmutable('2023-01-01');
+        $visitCount = VisitCount::zero();
 
-        $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('First visit cannot be after last visit');
+        $pageAnalytics = new PageAnalytics($url, $visitCount);
 
-        new PageAnalytics($url, $visitCount, $firstVisit, $lastVisit);
+        $this->assertEquals($url, $pageAnalytics->url);
+        $this->assertEquals($visitCount, $pageAnalytics->visitCount);
     }
 
     public function testCreateFactoryMethod(): void
     {
         $url = Url::fromString('https://example.com/test');
-        $firstVisit = new \DateTimeImmutable('2023-01-01');
-        $lastVisit = new \DateTimeImmutable('2023-01-31');
 
-        $pageAnalytics = PageAnalytics::create($url, 8, 15, $firstVisit, $lastVisit);
+        $pageAnalytics = PageAnalytics::create($url, 8, 15);
 
         $this->assertEquals($url, $pageAnalytics->url);
         $this->assertEquals(8, $pageAnalytics->visitCount->uniqueVisits);
         $this->assertEquals(15, $pageAnalytics->visitCount->totalVisits);
-        $this->assertEquals($firstVisit, $pageAnalytics->firstVisit);
-        $this->assertEquals($lastVisit, $pageAnalytics->lastVisit);
     }
 
     public function testFromRawDataFactoryMethod(): void
     {
-        $firstVisit = new \DateTimeImmutable('2023-01-01 09:30:00');
-        $lastVisit = new \DateTimeImmutable('2023-01-31 18:45:00');
-
         $pageAnalytics = PageAnalytics::fromRawData(
             'https://example.com/blog/post',
             'example.com',
             '/blog/post',
             12,
-            25,
-            $firstVisit,
-            $lastVisit
+            25
         );
 
         $this->assertEquals('https://example.com/blog/post', $pageAnalytics->url->getValue());
@@ -89,18 +73,14 @@ final class PageAnalyticsTest extends UnitTestCase
         $this->assertEquals('/blog/post', $pageAnalytics->url->getPath());
         $this->assertEquals(12, $pageAnalytics->visitCount->uniqueVisits);
         $this->assertEquals(25, $pageAnalytics->visitCount->totalVisits);
-        $this->assertEquals($firstVisit, $pageAnalytics->firstVisit);
-        $this->assertEquals($lastVisit, $pageAnalytics->lastVisit);
     }
 
     public function testGetDomainReturnsUrlDomain(): void
     {
         $url = Url::fromString('https://blog.example.com/post');
         $visitCount = new VisitCount(3, 7);
-        $firstVisit = new \DateTimeImmutable('2023-01-01');
-        $lastVisit = new \DateTimeImmutable('2023-01-31');
 
-        $pageAnalytics = new PageAnalytics($url, $visitCount, $firstVisit, $lastVisit);
+        $pageAnalytics = new PageAnalytics($url, $visitCount);
 
         $this->assertEquals('blog.example.com', $pageAnalytics->getDomain());
     }
@@ -109,10 +89,8 @@ final class PageAnalyticsTest extends UnitTestCase
     {
         $url = Url::fromString('https://example.com/blog/article');
         $visitCount = new VisitCount(4, 9);
-        $firstVisit = new \DateTimeImmutable('2023-01-01');
-        $lastVisit = new \DateTimeImmutable('2023-01-31');
 
-        $pageAnalytics = new PageAnalytics($url, $visitCount, $firstVisit, $lastVisit);
+        $pageAnalytics = new PageAnalytics($url, $visitCount);
 
         $this->assertEquals('/blog/article', $pageAnalytics->getPath());
     }
@@ -121,10 +99,8 @@ final class PageAnalyticsTest extends UnitTestCase
     {
         $url = Url::fromString('https://example.com/page');
         $visitCount = new VisitCount(6, 14);
-        $firstVisit = new \DateTimeImmutable('2023-01-01');
-        $lastVisit = new \DateTimeImmutable('2023-01-31');
 
-        $pageAnalytics = new PageAnalytics($url, $visitCount, $firstVisit, $lastVisit);
+        $pageAnalytics = new PageAnalytics($url, $visitCount);
 
         $this->assertEquals(6, $pageAnalytics->getUniqueVisits());
     }
@@ -133,10 +109,8 @@ final class PageAnalyticsTest extends UnitTestCase
     {
         $url = Url::fromString('https://example.com/page');
         $visitCount = new VisitCount(7, 16);
-        $firstVisit = new \DateTimeImmutable('2023-01-01');
-        $lastVisit = new \DateTimeImmutable('2023-01-31');
 
-        $pageAnalytics = new PageAnalytics($url, $visitCount, $firstVisit, $lastVisit);
+        $pageAnalytics = new PageAnalytics($url, $visitCount);
 
         $this->assertEquals(16, $pageAnalytics->getTotalVisits());
     }
@@ -145,10 +119,8 @@ final class PageAnalyticsTest extends UnitTestCase
     {
         $url = Url::fromString('https://example.com/page');
         $visitCount = new VisitCount(2, 5);
-        $firstVisit = new \DateTimeImmutable('2023-01-01');
-        $lastVisit = new \DateTimeImmutable('2023-01-31');
 
-        $pageAnalytics = new PageAnalytics($url, $visitCount, $firstVisit, $lastVisit);
+        $pageAnalytics = new PageAnalytics($url, $visitCount);
 
         $this->assertTrue($pageAnalytics->hasTraffic());
     }
@@ -157,9 +129,8 @@ final class PageAnalyticsTest extends UnitTestCase
     {
         $url = Url::fromString('https://example.com/page');
         $visitCount = VisitCount::zero();
-        $date = new \DateTimeImmutable('2023-01-01');
 
-        $pageAnalytics = new PageAnalytics($url, $visitCount, $date, $date);
+        $pageAnalytics = new PageAnalytics($url, $visitCount);
 
         $this->assertFalse($pageAnalytics->hasTraffic());
     }
@@ -168,57 +139,51 @@ final class PageAnalyticsTest extends UnitTestCase
     {
         $url = Url::fromString('https://example.com/page');
         $visitCount = new VisitCount(3, 6);
-        $firstVisit = new \DateTimeImmutable('2023-01-01');
-        $lastVisit = new \DateTimeImmutable('2023-01-31');
 
-        $pageAnalytics = new PageAnalytics($url, $visitCount, $firstVisit, $lastVisit);
+        $pageAnalytics = new PageAnalytics($url, $visitCount);
 
         $this->assertEquals(0.5, $pageAnalytics->getUniqueRatio());
     }
 
-    public function testGetVisitDurationInDaysWithSameDate(): void
+    public function testGetVisitCountValues(): void
     {
         $url = Url::fromString('https://example.com/page');
         $visitCount = new VisitCount(1, 1);
-        $date = new \DateTimeImmutable('2023-01-15');
 
-        $pageAnalytics = new PageAnalytics($url, $visitCount, $date, $date);
+        $pageAnalytics = new PageAnalytics($url, $visitCount);
 
-        $this->assertEquals(1, $pageAnalytics->getVisitDurationInDays());
+        $this->assertEquals(1, $pageAnalytics->getUniqueVisits());
+        $this->assertEquals(1, $pageAnalytics->getTotalVisits());
     }
 
-    public function testGetVisitDurationInDaysWithDifferentDates(): void
+    public function testGetVisitCountWithDifferentValues(): void
     {
         $url = Url::fromString('https://example.com/page');
         $visitCount = new VisitCount(5, 10);
-        $firstVisit = new \DateTimeImmutable('2023-01-01');
-        $lastVisit = new \DateTimeImmutable('2023-01-07');
 
-        $pageAnalytics = new PageAnalytics($url, $visitCount, $firstVisit, $lastVisit);
+        $pageAnalytics = new PageAnalytics($url, $visitCount);
 
-        $this->assertEquals(7, $pageAnalytics->getVisitDurationInDays());
+        $this->assertEquals(5, $pageAnalytics->getUniqueVisits());
+        $this->assertEquals(10, $pageAnalytics->getTotalVisits());
     }
 
-    public function testGetVisitDurationInDaysWithOneMonth(): void
+    public function testGetVisitCountWithLargeValues(): void
     {
         $url = Url::fromString('https://example.com/page');
         $visitCount = new VisitCount(8, 20);
-        $firstVisit = new \DateTimeImmutable('2023-01-01');
-        $lastVisit = new \DateTimeImmutable('2023-01-31');
 
-        $pageAnalytics = new PageAnalytics($url, $visitCount, $firstVisit, $lastVisit);
+        $pageAnalytics = new PageAnalytics($url, $visitCount);
 
-        $this->assertEquals(31, $pageAnalytics->getVisitDurationInDays());
+        $this->assertEquals(8, $pageAnalytics->getUniqueVisits());
+        $this->assertEquals(20, $pageAnalytics->getTotalVisits());
     }
 
     public function testIsSamePageReturnsTrueForSameUrl(): void
     {
         $url = Url::fromString('https://example.com/page');
         $visitCount = new VisitCount(4, 8);
-        $firstVisit = new \DateTimeImmutable('2023-01-01');
-        $lastVisit = new \DateTimeImmutable('2023-01-31');
 
-        $pageAnalytics = new PageAnalytics($url, $visitCount, $firstVisit, $lastVisit);
+        $pageAnalytics = new PageAnalytics($url, $visitCount);
         $sameUrl = Url::fromString('https://example.com/page');
 
         $this->assertTrue($pageAnalytics->isSamePage($sameUrl));
@@ -228,10 +193,8 @@ final class PageAnalyticsTest extends UnitTestCase
     {
         $url = Url::fromString('https://example.com/page1');
         $visitCount = new VisitCount(4, 8);
-        $firstVisit = new \DateTimeImmutable('2023-01-01');
-        $lastVisit = new \DateTimeImmutable('2023-01-31');
 
-        $pageAnalytics = new PageAnalytics($url, $visitCount, $firstVisit, $lastVisit);
+        $pageAnalytics = new PageAnalytics($url, $visitCount);
         $differentUrl = Url::fromString('https://example.com/page2');
 
         $this->assertFalse($pageAnalytics->isSamePage($differentUrl));
@@ -243,16 +206,12 @@ final class PageAnalyticsTest extends UnitTestCase
         
         $pageAnalytics1 = new PageAnalytics(
             $url,
-            new VisitCount(3, 6),
-            new \DateTimeImmutable('2023-01-01'),
-            new \DateTimeImmutable('2023-01-15')
+            new VisitCount(3, 6)
         );
 
         $pageAnalytics2 = new PageAnalytics(
             $url,
-            new VisitCount(2, 4),
-            new \DateTimeImmutable('2023-01-10'),
-            new \DateTimeImmutable('2023-01-31')
+            new VisitCount(2, 4)
         );
 
         $merged = $pageAnalytics1->merge($pageAnalytics2);
@@ -261,50 +220,24 @@ final class PageAnalyticsTest extends UnitTestCase
         $this->assertEquals(10, $merged->getTotalVisits());
     }
 
-    public function testMergeWithSamePageUsesEarliestFirstVisit(): void
+    public function testMergeWithSamePageCombinesCorrectly(): void
     {
         $url = Url::fromString('https://example.com/page');
         
         $pageAnalytics1 = new PageAnalytics(
             $url,
-            new VisitCount(3, 6),
-            new \DateTimeImmutable('2023-01-05'),
-            new \DateTimeImmutable('2023-01-15')
+            new VisitCount(3, 6)
         );
 
         $pageAnalytics2 = new PageAnalytics(
             $url,
-            new VisitCount(2, 4),
-            new \DateTimeImmutable('2023-01-01'),
-            new \DateTimeImmutable('2023-01-31')
+            new VisitCount(2, 4)
         );
 
         $merged = $pageAnalytics1->merge($pageAnalytics2);
 
-        $this->assertEquals('2023-01-01', $merged->firstVisit->format('Y-m-d'));
-    }
-
-    public function testMergeWithSamePageUsesLatestLastVisit(): void
-    {
-        $url = Url::fromString('https://example.com/page');
-        
-        $pageAnalytics1 = new PageAnalytics(
-            $url,
-            new VisitCount(3, 6),
-            new \DateTimeImmutable('2023-01-01'),
-            new \DateTimeImmutable('2023-01-15')
-        );
-
-        $pageAnalytics2 = new PageAnalytics(
-            $url,
-            new VisitCount(2, 4),
-            new \DateTimeImmutable('2023-01-10'),
-            new \DateTimeImmutable('2023-01-31')
-        );
-
-        $merged = $pageAnalytics1->merge($pageAnalytics2);
-
-        $this->assertEquals('2023-01-31', $merged->lastVisit->format('Y-m-d'));
+        $this->assertEquals(5, $merged->getUniqueVisits());
+        $this->assertEquals(10, $merged->getTotalVisits());
     }
 
     public function testMergeCreatesNewInstance(): void
@@ -313,16 +246,12 @@ final class PageAnalyticsTest extends UnitTestCase
         
         $pageAnalytics1 = new PageAnalytics(
             $url,
-            new VisitCount(3, 6),
-            new \DateTimeImmutable('2023-01-01'),
-            new \DateTimeImmutable('2023-01-15')
+            new VisitCount(3, 6)
         );
 
         $pageAnalytics2 = new PageAnalytics(
             $url,
-            new VisitCount(2, 4),
-            new \DateTimeImmutable('2023-01-10'),
-            new \DateTimeImmutable('2023-01-31')
+            new VisitCount(2, 4)
         );
 
         $merged = $pageAnalytics1->merge($pageAnalytics2);
@@ -335,16 +264,12 @@ final class PageAnalyticsTest extends UnitTestCase
     {
         $pageAnalytics1 = new PageAnalytics(
             Url::fromString('https://example.com/page1'),
-            new VisitCount(3, 6),
-            new \DateTimeImmutable('2023-01-01'),
-            new \DateTimeImmutable('2023-01-15')
+            new VisitCount(3, 6)
         );
 
         $pageAnalytics2 = new PageAnalytics(
             Url::fromString('https://example.com/page2'),
-            new VisitCount(2, 4),
-            new \DateTimeImmutable('2023-01-10'),
-            new \DateTimeImmutable('2023-01-31')
+            new VisitCount(2, 4)
         );
 
         $this->expectException(\InvalidArgumentException::class);
@@ -357,11 +282,9 @@ final class PageAnalyticsTest extends UnitTestCase
     {
         $url = Url::fromString('https://example.com/page');
         $visitCount = new VisitCount(5, 10);
-        $firstVisit = new \DateTimeImmutable('2023-01-01');
-        $lastVisit = new \DateTimeImmutable('2023-01-31');
 
-        $pageAnalytics1 = new PageAnalytics($url, $visitCount, $firstVisit, $lastVisit);
-        $pageAnalytics2 = new PageAnalytics($url, $visitCount, $firstVisit, $lastVisit);
+        $pageAnalytics1 = new PageAnalytics($url, $visitCount);
+        $pageAnalytics2 = new PageAnalytics($url, $visitCount);
 
         $this->assertTrue($pageAnalytics1->equals($pageAnalytics2));
         $this->assertTrue($pageAnalytics2->equals($pageAnalytics1));
@@ -371,9 +294,7 @@ final class PageAnalyticsTest extends UnitTestCase
     {
         $pageAnalytics = new PageAnalytics(
             Url::fromString('https://example.com/page'),
-            new VisitCount(5, 10),
-            new \DateTimeImmutable('2023-01-01'),
-            new \DateTimeImmutable('2023-01-31')
+            new VisitCount(5, 10)
         );
 
         $this->assertTrue($pageAnalytics->equals($pageAnalytics));
@@ -382,20 +303,14 @@ final class PageAnalyticsTest extends UnitTestCase
     public function testEqualsReturnsFalseForDifferentUrl(): void
     {
         $visitCount = new VisitCount(5, 10);
-        $firstVisit = new \DateTimeImmutable('2023-01-01');
-        $lastVisit = new \DateTimeImmutable('2023-01-31');
 
         $pageAnalytics1 = new PageAnalytics(
             Url::fromString('https://example.com/page1'), 
-            $visitCount, 
-            $firstVisit, 
-            $lastVisit
+            $visitCount
         );
         $pageAnalytics2 = new PageAnalytics(
             Url::fromString('https://example.com/page2'), 
-            $visitCount, 
-            $firstVisit, 
-            $lastVisit
+            $visitCount
         );
 
         $this->assertFalse($pageAnalytics1->equals($pageAnalytics2));
@@ -404,35 +319,9 @@ final class PageAnalyticsTest extends UnitTestCase
     public function testEqualsReturnsFalseForDifferentVisitCount(): void
     {
         $url = Url::fromString('https://example.com/page');
-        $firstVisit = new \DateTimeImmutable('2023-01-01');
-        $lastVisit = new \DateTimeImmutable('2023-01-31');
 
-        $pageAnalytics1 = new PageAnalytics($url, new VisitCount(5, 10), $firstVisit, $lastVisit);
-        $pageAnalytics2 = new PageAnalytics($url, new VisitCount(6, 12), $firstVisit, $lastVisit);
-
-        $this->assertFalse($pageAnalytics1->equals($pageAnalytics2));
-    }
-
-    public function testEqualsReturnsFalseForDifferentFirstVisit(): void
-    {
-        $url = Url::fromString('https://example.com/page');
-        $visitCount = new VisitCount(5, 10);
-        $lastVisit = new \DateTimeImmutable('2023-01-31');
-
-        $pageAnalytics1 = new PageAnalytics($url, $visitCount, new \DateTimeImmutable('2023-01-01'), $lastVisit);
-        $pageAnalytics2 = new PageAnalytics($url, $visitCount, new \DateTimeImmutable('2023-01-02'), $lastVisit);
-
-        $this->assertFalse($pageAnalytics1->equals($pageAnalytics2));
-    }
-
-    public function testEqualsReturnsFalseForDifferentLastVisit(): void
-    {
-        $url = Url::fromString('https://example.com/page');
-        $visitCount = new VisitCount(5, 10);
-        $firstVisit = new \DateTimeImmutable('2023-01-01');
-
-        $pageAnalytics1 = new PageAnalytics($url, $visitCount, $firstVisit, new \DateTimeImmutable('2023-01-30'));
-        $pageAnalytics2 = new PageAnalytics($url, $visitCount, $firstVisit, new \DateTimeImmutable('2023-01-31'));
+        $pageAnalytics1 = new PageAnalytics($url, new VisitCount(5, 10));
+        $pageAnalytics2 = new PageAnalytics($url, new VisitCount(6, 12));
 
         $this->assertFalse($pageAnalytics1->equals($pageAnalytics2));
     }

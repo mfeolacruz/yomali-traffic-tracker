@@ -83,8 +83,6 @@ final class AnalyticsControllerIntegrationTest extends IntegrationTestCase
         $this->assertEquals('/page1', $firstPage['path']);
         $this->assertEquals(2, $firstPage['unique_visits']);
         $this->assertEquals(2, $firstPage['total_visits']);
-        $this->assertEquals('2023-01-01 10:00:00', $firstPage['first_visit']);
-        $this->assertEquals('2023-01-02 11:00:00', $firstPage['last_visit']);
 
         // Check pagination
         $this->assertEquals(1, $response['pagination']['page']);
@@ -296,8 +294,6 @@ final class AnalyticsControllerIntegrationTest extends IntegrationTestCase
         $this->assertEquals('https://example.com/popular', $popularPage['url']);
         $this->assertEquals(3, $popularPage['unique_visits']); // 3 unique IPs
         $this->assertEquals(4, $popularPage['total_visits']);   // 4 total visits
-        $this->assertEquals('2023-01-01 09:00:00', $popularPage['first_visit']);
-        $this->assertEquals('2023-01-02 15:00:00', $popularPage['last_visit']);
         
         // Second page should be less popular
         $lessPopularPage = $response['data'][1];
