@@ -11,18 +11,12 @@ use Yomali\Tracker\Domain\Analytics\ValueObject\DateRange;
 interface AnalyticsRepositoryInterface
 {
     /**
-     * Get page analytics with optional filtering and pagination
+     * Get page analytics with optional filtering
      *
      * @param AnalyticsFilter $filter Filters to apply
-     * @param int $offset Pagination offset
-     * @param int $limit Maximum number of results
      * @return PageAnalytics[] Array of page analytics ordered by total visits desc
      */
-    public function getPageAnalytics(
-        AnalyticsFilter $filter,
-        int $offset = 0,
-        int $limit = 20
-    ): array;
+    public function getPageAnalytics(AnalyticsFilter $filter): array;
 
     /**
      * Count total pages matching the filters
