@@ -155,6 +155,8 @@ final class MySQLAnalyticsRepository implements AnalyticsRepositoryInterface
         $params = [];
 
         if ($filter->hasDateFilter()) {
+            // Always add both conditions when we have a date range
+            // (AnalyticsFilter ensures we always have both start and end dates when hasDateFilter() is true)
             $conditions[] = "created_at >= :start_date";
             $conditions[] = "created_at <= :end_date";
             $params[':start_date'] = $filter->dateRange->startDate->format('Y-m-d H:i:s');

@@ -25,6 +25,7 @@
     <php>
         <env name="APP_ENV" value="testing"/>
         <env name="DB_HOST" value="mysql"/>
+        <env name="DB_PORT" value="3306"/>
         <env name="DB_NAME" value="tracker_db_test"/>
         <env name="DB_USER" value="tracker_user"/>
         <env name="DB_PASSWORD" value="tracker_pass"/>
