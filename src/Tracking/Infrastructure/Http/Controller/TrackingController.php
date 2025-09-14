@@ -75,7 +75,6 @@ final class TrackingController
             http_response_code(400);
             echo json_encode(['error' => $e->getMessage()]);
         } catch (\Exception $e) {
-            error_log('Tracking error: ' . $e->getMessage());
             http_response_code(500);
             echo json_encode(['error' => 'Internal server error']);
         }
