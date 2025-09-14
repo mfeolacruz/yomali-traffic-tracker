@@ -26,9 +26,9 @@ abstract class IntegrationTestCase extends TestCase
             $dotenv = Dotenv::createMutable('/var/www');
             $dotenv->load();
 
-            // Store original and test database names
-            self::$originalDbName = $_ENV['DB_NAME'] ?? 'tracker_db';
-            self::$testDbName = $_ENV['DB_TEST_NAME'] ?? 'tracker_db_test';
+            // Store original and test database names - fail if not set
+            self::$originalDbName = $_ENV['DB_NAME'] ?? throw new \RuntimeException('DB_NAME environment variable is not set');
+            self::$testDbName = $_ENV['DB_TEST_NAME'] ?? throw new \RuntimeException('DB_TEST_NAME environment variable is not set');
             self::$envLoaded = true;
         }
 

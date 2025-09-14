@@ -4,27 +4,27 @@ declare(strict_types=1);
 
 namespace Yomali\Tracker\Tests\Unit\Tracking\Infrastructure\Persistence\Connection;
 
-use PHPUnit\Framework\TestCase;
+use Yomali\Tracker\Tests\Unit\UnitTestCase;
 use Yomali\Tracker\Tracking\Infrastructure\Persistence\Connection\MySQLConnection;
 
 /**
  * @group unit
  */
-final class MySQLConnectionTest extends TestCase
+final class MySQLConnectionTest extends UnitTestCase
 {
     protected function setUp(): void
     {
-        // Ensure we have test database config
-        $_ENV['DB_HOST'] = 'mysql';
-        $_ENV['DB_NAME'] = 'tracker_db_test';
-        $_ENV['DB_USER'] = 'tracker_user';
-        $_ENV['DB_PASSWORD'] = 'tracker_pass';
+        parent::setUp();
+        
+        // Set up test database configuration from environment
+        $this->setTestDbConfig();
     }
 
     protected function tearDown(): void
     {
         // Reset singleton after each test
         MySQLConnection::reset();
+        parent::tearDown();
     }
 
     public function testSingletonReturnsSameInstance(): void
