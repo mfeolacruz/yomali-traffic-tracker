@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Yomali\Tracker\Tests\Acceptance\Api\v1;
 
 use PHPUnit\Framework\TestCase;
-use Yomali\Tracker\Tracking\Infrastructure\Persistence\Connection\MySQLConnection;
+use Yomali\Tracker\Infrastructure\Persistence\MySQL\Connection\MySQLConnection;
 
 /**
  * Acceptance test for the complete tracking endpoint

@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Yomali\Tracker\Tests\Integration;
 
-use PHPUnit\Framework\TestCase;
-use Yomali\Tracker\Tracking\Infrastructure\Persistence\Connection\MySQLConnection;
 use Dotenv\Dotenv;
+use PHPUnit\Framework\TestCase;
+use Yomali\Tracker\Infrastructure\Persistence\MySQL\Connection\MySQLConnection;
 
 /**
  * Base class for integration tests that need database
