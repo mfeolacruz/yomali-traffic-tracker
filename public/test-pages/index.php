@@ -103,7 +103,7 @@
         </div>
         
         <div style="text-align: center;">
-            <a href="../dashboard.php" class="dashboard-link">
+            <a href="../dashboard/" class="dashboard-link">
                 📊 View Analytics Dashboard
             </a>
         </div>

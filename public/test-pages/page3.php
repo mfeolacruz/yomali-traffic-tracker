@@ -85,7 +85,7 @@
             <a href="page1.php">Go to Page 1 (Home)</a>
             <a href="page2.php">Go to Page 2 (About)</a>
             <a href="page4.php">Go to Page 4 (Contact)</a>
-            <a href="../dashboard.php">View Dashboard</a>
+            <a href="../dashboard/">View Dashboard</a>
         </div>
     </div>
 
