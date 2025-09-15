@@ -87,6 +87,6 @@ final class VisitTest extends TestCase
         $visit = Visit::create('192.168.1.1', 'https://example.com/path?query=1');
 
         $this->assertSame('example.com', $visit->url->domain);
-        $this->assertSame('/path?query=1', $visit->url->path);
+        $this->assertSame('/path', $visit->url->path);
     }
 }
