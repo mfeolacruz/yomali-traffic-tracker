@@ -163,7 +163,7 @@ For each user story to be considered complete:
     - Table showing all tracked pages with metrics
     - Professional visual design with consistent branding
 - **Technical Notes**:
-    - File: `public/dashboard.php`
+    - File: `public/dashboard/index.php`
     - Use CSS Grid/Flexbox for responsive layout
     - Vanilla JavaScript for interactivity
 
