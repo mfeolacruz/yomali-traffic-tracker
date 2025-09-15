@@ -47,7 +47,11 @@ This will:
 - Seed database with test data
 
 3. Access the services:
-- **Application**: http://localhost:8888
+- **Dashboard**: http://localhost:8888 (automatically redirects to dashboard)
+- **Analytics Dashboard**: http://localhost:8888/dashboard/
+- **JavaScript Tracker**: http://localhost:8888/tracker.js
+- **Test Pages**: http://localhost:8888/test-pages/
+- **API Documentation**: http://localhost:8888/api/docs.php
 - **PHPMyAdmin**: http://localhost:8081
     - Username: `root`
     - Password: `root_password`
@@ -222,8 +226,6 @@ GET /api/v1/analytics?domain=example.com&start_date=2023-01-01&end_date=2023-12-
       "path": "/popular-page",
       "unique_visits": 150,
       "total_visits": 300,
-      "first_visit": "2023-01-15 10:30:00",
-      "last_visit": "2023-12-20 16:45:00"
     }
   ],
   "pagination": {
@@ -300,6 +302,56 @@ curl "http://localhost:8888/api/v1/analytics?domain=example.com&start_date=2023-
 # Test health endpoint  
 curl http://localhost:8888/api/v1/health
 ```
+
+## 🚀 JavaScript Tracking SDK
+
+The system includes a lightweight JavaScript tracking SDK that automatically tracks page views.
+
+### Quick Integration
+
+Add the tracking script to any website:
+
+```html
+<!-- Add before closing </body> tag -->
+<script src="http://localhost:8888/tracker.js"></script>
+```
+
+### Features
+
+- **Automatic tracking**: No additional code required
+- **Cross-origin**: CORS-enabled for any domain
+- **Error handling**: Silent failures, no console errors
+
+### How it works
+
+1. Script loads and waits for DOM ready
+2. Captures `window.location.href` 
+3. Sends page URL to `/api/v1/track` endpoint
+4. Visitor IP automatically extracted from headers
+
+### Test Pages
+
+Interactive test pages are available at http://localhost:8888/test-pages/:
+
+- **Test Suite Hub**: Navigate between all test scenarios
+- **Page 1 (Home)**: Blue theme with tracker status indicator
+- **Page 2 (About)**: Green theme showcasing features
+- **Page 3 (Services)**: Yellow theme with service descriptions  
+- **Page 4 (Contact)**: Red theme with contact form
+
+Each test page:
+- ✅ Includes embedded tracker
+- ✅ Shows current URL and tracker status
+- ✅ Provides navigation between pages
+- ✅ Links to analytics dashboard
+
+### Testing Instructions
+
+1. Visit http://localhost:8888/test-pages/
+2. Navigate through test pages to generate tracking data
+3. Open browser DevTools → Network tab to monitor requests
+4. Verify tracking requests return HTTP 204 status
+5. Check analytics dashboard for real-time updates
 
 ## 📊 Database
 
@@ -389,14 +441,24 @@ yomali-traffic-tracker/
 ├── public/              # Public web root
 │   ├── api/            # API endpoints
 │   │   └── v1/        # API version 1 endpoints
-│   ├── assets/         # Static assets
-│   │   ├── css/       # Stylesheets
-│   │   └── js/        # JavaScript files
-│   └── index.php      # Entry point
+│   ├── dashboard/      # Analytics dashboard
+│   │   ├── assets/    # Dashboard-specific assets
+│   │   │   ├── css/  # Dashboard stylesheets
+│   │   │   └── js/   # Dashboard JavaScript
+│   │   └── index.php  # Dashboard interface
+│   ├── test-pages/     # SDK test suite
+│   │   ├── index.php  # Test navigation hub
+│   │   ├── page1.php  # Test page 1 (Home)
+│   │   ├── page2.php  # Test page 2 (About)
+│   │   ├── page3.php  # Test page 3 (Services)
+│   │   └── page4.php  # Test page 4 (Contact)
+│   ├── tracker.js      # JavaScript tracking SDK
+│   └── index.php      # Entry point (redirects to dashboard)
 ├── src/                 # Application source code
 │   ├── Domain/         # Business logic and entities
 │   ├── Application/    # Use cases and services
-│   └── Infrastructure/ # External services, DB, HTTP
+│   └── Infrastructure/ # External services, DB
+│   └── Presentation/
 ├── tests/              # Test suites
 │   ├── Unit/          # Unit tests
 │   ├── Integration/   # Integration tests
@@ -411,14 +473,6 @@ yomali-traffic-tracker/
 ├── phpunit.xml       # PHPUnit configuration
 └── README.md         # This file
 ```
-
-## 🔐 Security
-
-- SQL injection prevention via prepared statements
-- XSS protection headers in Nginx
-- CORS properly configured for API endpoints
-- Input validation at domain layer
-- Environment variables for sensitive data
 
 ## 👤 Author
 
