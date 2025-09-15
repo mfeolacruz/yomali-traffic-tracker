@@ -63,7 +63,7 @@ final class MySQLVisitRepositoryIntegrationTest extends IntegrationTestCase
         $this->assertEquals('10.0.0.1', $row['ip_address']);
         $this->assertEquals('https://example.com/page?query=test', $row['page_url']);
         $this->assertEquals('example.com', $row['page_domain']);
-        $this->assertEquals('/page?query=test', $row['page_path']);
+        $this->assertEquals('/page', $row['page_path']);
     }
 
     public function testCanSaveMultipleVisits(): void

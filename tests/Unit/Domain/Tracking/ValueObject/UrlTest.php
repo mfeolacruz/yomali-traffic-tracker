@@ -24,7 +24,7 @@ final class UrlTest extends TestCase
 
         $this->assertSame('https://example.com/search?q=test&page=2', $url->fullUrl);
         $this->assertSame('example.com', $url->domain);
-        $this->assertSame('/search?q=test&page=2', $url->path);
+        $this->assertSame('/search', $url->path);
     }
 
     public function testValidUrlWithoutPath(): void

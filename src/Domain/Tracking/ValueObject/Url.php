@@ -20,8 +20,7 @@ final readonly class Url implements \Stringable
 
         $parsed = parse_url($url);
         $this->domain = $parsed['host'] ?? '';
-        $this->path = ($parsed['path'] ?? '/')
-            . (isset($parsed['query']) ? '?' . $parsed['query'] : '');
+        $this->path = $parsed['path'] ?? '/';
     }
 
     private function validate(string $url): void
